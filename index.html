@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Manifest generator</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body>
+  <form class="form-spacing">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="version" style="display: inline-block;">Version</label>
+    <span class="info-icon" title="Hover for more information">&#9432;
+      <span class="info-text">Put the pack version it works on for ex: 1.0.0</span>
+    </span>
+    <input type="text" id="version" name="version" required>
+
+    <label for="minimum_api_version" style="display: inline-block;">Minimum API Version</label>
+    <span class="info-icon" title="Hover for more information">&#9432;
+      <span class="info-text">Put the minimum mc version it works on for ex: 1.17.0</span>
+    </span>
+    <input type="text" id="minimum_api_version" name="minimum_api_version" required>
+
+    <label for="author">Author</label>
+    <input type="text" id="author" name="author" required>
+
+    <input type="button" id="manifest-button" value="Generate manifest.json" onclick="generateManifest()">
+  </form>
+  <script src="script.js"></script>
+</body>
+
+</html>
