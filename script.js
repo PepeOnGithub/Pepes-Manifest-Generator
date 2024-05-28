@@ -1,4 +1,5 @@
 function generateManifest() {
+  var packType = document.getElementById("packType").value;
   var name = document.getElementById("name").value;
   var description = document.getElementById("description").value;
   var version = document.getElementById("version").value;
@@ -19,7 +20,7 @@ function generateManifest() {
     },
     "modules": [
       {
-        "type": "resources",
+        "type": packType === 'resources' ? 'resources' : 'data',
         "uuid": uuid2,
         "version": [parseInt(version.split(".")[0]), parseInt(version.split(".")[1]), parseInt(version.split(".")[2])]
       }
