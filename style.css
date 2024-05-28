@@ -73,7 +73,28 @@ body {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
-  margin: 20px auto;
+  text-align: left;
+}
+
+.back-button {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+}
+
+h2 {
+  text-align: left;
+  margin-top: 0;
 }
 
 form {
@@ -86,41 +107,12 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="text"],
-textarea {
+input[type="text"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 15px;
   font-size: 1rem;
-}
-
-textarea {
-  resize: vertical;
-}
-
-.info-icon {
-  font-size: 16px;
-  color: #999;
-  margin-left: 5px;
-  position: relative;
-  top: -1px;
-}
-
-.info-text {
-  display: none;
-  position: absolute;
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 5px;
-  z-index: 1;
-  top: 25px;
-  left: 5px;
-}
-
-.info-icon:hover .info-text {
-  display: block;
 }
 
 #manifest-button {
