@@ -7,36 +7,53 @@
 </head>
 
 <body>
-  <form class="form-spacing">
-    <label for="packType">Select Pack Type</label>
-    <select id="packType" name="packType" required>
-      <option value="resources">Resource Pack</option>
-      <option value="behavior">Behavior Pack</option>
-    </select>
+  <div class="container">
+    <div class="header">
+      <h1>Manifest Generator</h1>
+      <p>by MCT Productions</p>
+    </div>
+    <div class="pack-selection">
+      <div class="pack-option" id="behavior-pack">
+        <h2>Behaviour Pack</h2>
+        <p>A behavior pack changes how the game functions like by adding ores, mobs, biomes etc.</p>
+        <button onclick="selectPack('behavior')">Generate</button>
+      </div>
+      <div class="pack-option" id="resources-pack">
+        <h2>Resources Pack</h2>
+        <p>A resources pack changes how the textures, game’s UI looks or sound. You can even make HUD modules if you use Molang.</p>
+        <button onclick="selectPack('resources')">Generate</button>
+      </div>
+    </div>
+  </div>
 
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required>
+  <div id="form-container" class="form-container" style="display: none;">
+    <form class="form-spacing">
+      <input type="hidden" id="packType" name="packType">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required>
 
-    <label for="description">Description</label>
-    <textarea id="description" name="description" required></textarea>
+      <label for="description">Description</label>
+      <textarea id="description" name="description" required></textarea>
 
-    <label for="version" style="display: inline-block;">Version</label>
-    <span class="info-icon" title="Hover for more information">&#9432;
-      <span class="info-text">Put the pack version it works on for ex: 1.0.0</span>
-    </span>
-    <input type="text" id="version" name="version" required>
+      <label for="version" style="display: inline-block;">Version</label>
+      <span class="info-icon" title="Hover for more information">&#9432;
+        <span class="info-text">Put the pack version it works on for ex: 1.0.0</span>
+      </span>
+      <input type="text" id="version" name="version" required>
 
-    <label for="minimum_api_version" style="display: inline-block;">Minimum API Version</label>
-    <span class="info-icon" title="Hover for more information">&#9432;
-      <span class="info-text">Put the minimum mc version it works on for ex: 1.17.0</span>
-    </span>
-    <input type="text" id="minimum_api_version" name="minimum_api_version" required>
+      <label for="minimum_api_version" style="display: inline-block;">Minimum API Version</label>
+      <span class="info-icon" title="Hover for more information">&#9432;
+        <span class="info-text">Put the minimum mc version it works on for ex: 1.17.0</span>
+      </span>
+      <input type="text" id="minimum_api_version" name="minimum_api_version" required>
 
-    <label for="author">Author</label>
-    <input type="text" id="author" name="author" required>
+      <label for="author">Author</label>
+      <input type="text" id="author" name="author" required>
 
-    <input type="button" id="manifest-button" value="Generate manifest.json" onclick="generateManifest()">
-  </form>
+      <input type="button" id="manifest-button" value="Generate manifest.json" onclick="generateManifest()">
+    </form>
+  </div>
+
   <script src="script.js"></script>
 </body>
 
