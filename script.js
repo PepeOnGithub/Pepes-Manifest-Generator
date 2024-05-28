@@ -1,7 +1,13 @@
 function selectPack(packType) {
   document.getElementById('packType').value = packType;
-  document.querySelector('.container').style.display = 'none';
+  document.getElementById('selection-container').style.display = 'none';
   document.getElementById('form-container').style.display = 'block';
+  document.getElementById('form-title').textContent = packType === 'resources' ? 'Resources Pack Generator' : 'Behavior Pack Generator';
+}
+
+function goBack() {
+  document.getElementById('selection-container').style.display = 'block';
+  document.getElementById('form-container').style.display = 'none';
 }
 
 function generateManifest() {
