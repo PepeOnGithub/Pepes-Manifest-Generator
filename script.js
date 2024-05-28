@@ -1,3 +1,9 @@
+function selectPack(packType) {
+  document.getElementById('packType').value = packType;
+  document.querySelector('.container').style.display = 'none';
+  document.getElementById('form-container').style.display = 'block';
+}
+
 function generateManifest() {
   var packType = document.getElementById("packType").value;
   var name = document.getElementById("name").value;
