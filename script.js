@@ -2,8 +2,8 @@ function generateManifest() {
   var name = document.getElementById("name").value;
   var description = document.getElementById("description").value;
   var version = document.getElementById("version").value;
-  var uuid = generateUUID();
-  var uuid2 = generateUUID2();
+  var uuid1 = generateUUID();
+  var uuid2 = generateUUID();
   var minimum_api_version = document.getElementById("minimum_api_version").value;
   var author = document.getElementById("author").value;
 
@@ -12,7 +12,7 @@ function generateManifest() {
     "header": {
       "name": name,
       "description": description,
-      "uuid": uuid,
+      "uuid": uuid1,
       "version": [parseInt(version.split(".")[0]), parseInt(version.split(".")[1]), parseInt(version.split(".")[2])],
       "min_engine_version": [parseInt(minimum_api_version.split(".")[0]), parseInt(minimum_api_version.split(".")[1]), parseInt(minimum_api_version.split(".")[2])],
       "author": author
@@ -27,7 +27,6 @@ function generateManifest() {
   };
 
   var manifestJson = JSON.stringify(manifest, null, 2);
-
   var blob = new Blob([manifestJson], { type: "application/json" });
   var url = URL.createObjectURL(blob);
 
@@ -40,19 +39,7 @@ function generateManifest() {
 function generateUUID() {
   var d = new Date().getTime();
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-    d += performance.now(); 
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = (d + Math.random() * 16) % 16 | 0;
-    d = Math.floor(d / 16);
-    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-}
-
-function generateUUID2() {
-  var d = new Date().getTime();
-  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-    d += performance.now(); 
+    d += performance.now();
   }
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = (d + Math.random() * 16) % 16 | 0;
