@@ -1,130 +1,93 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #ffffff;
   margin: 0;
   padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .container {
+  max-width: 900px;
+  padding: 2rem;
   text-align: center;
 }
 
-.header {
-  margin-bottom: 20px;
-}
-
-.header h1 {
+header h1 {
   font-size: 2.5rem;
-}
-
-.header p {
-  font-size: 1rem;
-  color: #777;
 }
 
 .pack-selection {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .pack-option {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  width: 250px;
+  background: #1f1f1f;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 260px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
 .pack-option h2 {
   font-size: 1.5rem;
-  margin-bottom: 10px;
 }
 
 .pack-option p {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: #bbb;
 }
 
-.pack-option button {
-  background-color: #2196F3;
-  color: #fff;
+.pack-option button,
+#manifest-button,
+.back-button,
+form button {
+  margin-top: 1rem;
+  background: #2196F3;
+  color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.pack-option button:hover {
-  background-color: #0c7cd5;
+.pack-option button:hover,
+#manifest-button:hover,
+.back-button:hover,
+form button:hover {
+  background: #0c7cd5;
 }
 
 .form-container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
-  text-align: left;
-}
-
-.back-button {
-  background-color: #f0f0f0;
-  color: #333;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  display: inline-block;
-  margin-bottom: 10px;
-}
-
-.back-button:hover {
-  background-color: #e0e0e0;
-}
-
-h2 {
-  text-align: left;
-  margin-top: 0;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
+  max-width: 500px;
+  margin: auto;
+  padding: 2rem;
+  background: #1f1f1f;
+  border-radius: 12px;
 }
 
 input[type="text"] {
+  width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #2c2c2c;
+  color: white;
+  margin-bottom: 1rem;
 }
 
-#manifest-button {
-  background-color: #2196F3;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-#manifest-button:hover {
-  background-color: #0c7cd5;
+@media screen and (max-width: 768px) {
+  .pack-selection {
+    flex-direction: column;
+    align-items: center;
+  }
 }
