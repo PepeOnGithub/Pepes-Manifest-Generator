@@ -1,33 +1,33 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manifest Generator</title>
-  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <div class="container" id="selection-container">
-    <div class="header">
+    <header>
       <h1>Manifest Generator</h1>
-      <p>by MCT Productions</p>
-    </div>
-    <div class="pack-selection">
+      <p>Pepe's Projects</p>
+    </header>
+    <section class="pack-selection">
       <div class="pack-option" id="behavior-pack">
-        <h2> Behaviour Pack Gen</h2>
-        <p>A behavior pack changes how the game functions like by adding ores, mobs, biomes etc.</p>
+        <h2>Behavior Pack Gen</h2>
+        <p>Change how the game works with custom mobs, biomes, and more.</p>
         <button onclick="selectPack('behavior')">Generate</button>
       </div>
       <div class="pack-option" id="resources-pack">
-        <h2> Resources Pack Gen</h2>
-        <p>A resources pack changes how the textures, game’s UI looks or sound. You can even make HUD modules if you use Molang.</p>
+        <h2>Resources Pack Gen</h2>
+        <p>Customize textures, UI, sounds, or use Molang for HUDs.</p>
         <button onclick="selectPack('resources')">Generate</button>
       </div>
-    </div>
+    </section>
   </div>
 
   <div id="form-container" class="form-container" style="display: none;">
-    <button class="back-button" onclick="goBack()">&#x25C0; Back</button>
+    <button class="back-button" onclick="goBack()">← Back</button>
     <h2 id="form-title">Resources Pack Generator</h2>
     <form class="form-spacing">
       <input type="hidden" id="packType" name="packType">
@@ -37,7 +37,7 @@
       <label for="description">Description:</label>
       <input type="text" id="description" name="description" required>
 
-      <label for="version">Version:</label>
+      <label for="version">Version (e.g., 1.0.0):</label>
       <input type="text" id="version" name="version" required>
 
       <label for="minimum_api_version">Minimum API Version:</label>
@@ -46,11 +46,20 @@
       <label for="author">Author:</label>
       <input type="text" id="author" name="author" required>
 
+      <div id="dependencies-container">
+        <label>Dependencies:</label>
+        <button type="button" onclick="addDependency()">+ Add Dependency</button>
+      </div>
+
+      <div id="subpacks-container">
+        <label>Subpacks:</label>
+        <button type="button" onclick="addSubpack()">+ Add Subpack</button>
+      </div>
+
       <input type="button" id="manifest-button" value="Generate manifest.json" onclick="generateManifest()">
     </form>
   </div>
 
   <script src="script.js"></script>
 </body>
-
 </html>
