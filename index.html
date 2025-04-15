@@ -10,7 +10,8 @@
   <div class="container" id="selection-container">
     <header>
       <h1>Manifest Generator</h1>
-      <p>Pepe's Projects</p>
+      <p>by MCT Productions</p>
+      <button id="theme-toggle" onclick="toggleTheme()">Switch to Light Mode</button>
     </header>
     <section class="pack-selection">
       <div class="pack-option" id="behavior-pack">
@@ -31,8 +32,10 @@
     <h2 id="form-title">Resources Pack Generator</h2>
     <form class="form-spacing">
       <input type="hidden" id="packType" name="packType">
+      
       <label for="name">Pack name:</label>
       <input type="text" id="name" name="name" required>
+      <span class="tooltip" data-tooltip="The name of your pack, like 'My Awesome Pack'">?</span>
 
       <label for="description">Description:</label>
       <input type="text" id="description" name="description" required>
@@ -56,8 +59,22 @@
         <button type="button" onclick="addSubpack()">+ Add Subpack</button>
       </div>
 
+      <div id="files-container">
+        <label for="files">Select Files:</label>
+        <input type="file" id="files" multiple>
+      </div>
+
+      <input type="button" id="preview-button" value="Preview Manifest" onclick="previewManifest()">
       <input type="button" id="manifest-button" value="Generate manifest.json" onclick="generateManifest()">
     </form>
+  </div>
+
+  <div id="preview-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Preview Manifest</h2>
+      <pre id="preview-output"></pre>
+      <button onclick="closePreview()">Close Preview</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
