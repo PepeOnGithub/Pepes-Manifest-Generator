@@ -3,7 +3,7 @@
 A sleek website to generate `manifest.json` files for your Minecraft Bedrock Edition **resource** and **behavior** packs.
 
 🔗 **Live Demo:**  
-[https://pepeongithub.github.io/Resorce-and-Behaviour-Pack-Manifest-Generator/](https://pepeongithub.github.io/Resorce-and-Behaviour-Pack-Manifest-Generator/)
+[https://pepeongithub.github.io/Pepes-Manifest-Generator/](https://pepeongithub.github.io/Pepes-Manifest-Generator/)
 
 ---
 
