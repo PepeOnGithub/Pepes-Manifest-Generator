@@ -1,137 +1,692 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manifest Generator | Pepe's Projects</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCBE Manifest Generator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        discord: {
+          blurple: '#7289DA',
+          blurple2: '#5b73c7',
+          dark1: '#1e2124',
+          dark2: '#282b30',
+          dark3: '#36393e',
+          dark4: '#424549',
+          light: '#99aab5',
+          white: '#ffffff',
+        }
+      },
+      fontFamily: {
+        outfit: ['Outfit', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Outfit', sans-serif; background: #1e2124; color: #dcddde; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #1e2124; }
+  ::-webkit-scrollbar-thumb { background: #424549; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #7289DA; }
+
+  .tab-btn { transition: all 0.2s ease; border-bottom: 2px solid transparent; }
+  .tab-btn.active { color: #7289DA; border-bottom-color: #7289DA; }
+  .tab-btn:not(.active):hover { color: #b9bbbe; border-bottom-color: #4f545c; }
+
+  .form-section { animation: fadeSlide 0.25s ease; }
+  @keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .inp {
+    width: 100%; padding: 0.55rem 0.9rem;
+    background: #1e2124; border: 1px solid #42454980;
+    border-radius: 6px; color: #dcddde; font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .inp:focus { border-color: #7289DA; box-shadow: 0 0 0 3px #7289da20; }
+  .inp::placeholder { color: #4f545c; }
+
+  select.inp option { background: #282b30; }
+
+  .lbl { display: block; font-size: 0.78rem; font-weight: 600; color: #99aab5; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 5px; }
+  .lbl i { margin-right: 5px; color: #7289DA; }
+
+  .card-hover { transition: all 0.2s ease; }
+  .card-hover:hover { border-color: #7289DA !important; transform: translateY(-2px); box-shadow: 0 8px 24px #0006; }
+
+  .btn-blurple {
+    background: #7289DA; color: #fff; border: none; padding: 0.6rem 1.2rem;
+    border-radius: 6px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-blurple:hover { background: #5b73c7; transform: translateY(-1px); box-shadow: 0 4px 12px #7289da40; }
+  .btn-blurple:active { transform: translateY(0); }
+
+  .btn-ghost {
+    background: transparent; color: #99aab5; border: 1px solid #42454980;
+    padding: 0.6rem 1.2rem; border-radius: 6px; font-family: 'Outfit', sans-serif;
+    font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-ghost:hover { border-color: #7289DA; color: #7289DA; }
+
+  .btn-danger {
+    background: #ed4245; color: #fff; border: none; width: 28px; height: 28px;
+    border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .btn-danger:hover { background: #c03537; }
+
+  .btn-sm-ghost {
+    background: transparent; color: #7289DA; border: 1px dashed #7289da60;
+    padding: 0.4rem 0.8rem; border-radius: 5px; font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-sm-ghost:hover { border-color: #7289DA; background: #7289da10; }
+
+  .section-divider { border: none; border-top: 1px solid #42454950; margin: 1.5rem 0; }
+
+  pre#live-preview {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem; line-height: 1.7;
+    background: #1e2124; color: #a8ff78;
+    padding: 1.2rem; border-radius: 8px; overflow: auto;
+    max-height: calc(100vh - 240px); min-height: 300px;
+    border: 1px solid #42454960;
+  }
+
+  .json-key { color: #7289DA; }
+  .json-str { color: #a8ff78; }
+  .json-num { color: #f4c668; }
+  .json-bool { color: #f07178; }
+  .json-null { color: #99aab5; }
+
+  .badge {
+    display: inline-block; padding: 1px 8px; border-radius: 20px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+    background: #7289da20; color: #7289DA; border: 1px solid #7289da40;
+    vertical-align: middle; margin-left: 6px;
+  }
+
+  .cap-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .cap-check input[type=checkbox] { accent-color: #7289DA; width: 15px; height: 15px; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #36393e; border: 1px solid #7289DA; color: #dcddde;
+    padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.88rem;
+    display: flex; align-items: center; gap: 8px;
+    transform: translateY(80px); opacity: 0; transition: all 0.3s ease;
+    z-index: 999; pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  .collapse-toggle { cursor: pointer; user-select: none; }
+  .collapse-toggle:hover { color: #7289DA; }
+
+  .module-card { background: #1e2124; border: 1px solid #42454960; border-radius: 8px; padding: 1rem; }
+  .dep-card { background: #1e2124; border: 1px solid #42454960; border-radius: 8px; padding: 1rem; }
+
+  @media (max-width: 768px) {
+    pre#live-preview { max-height: 300px; }
+  }
+</style>
 </head>
-<body>
-  <div class="container">
-    <div class="glass-panel">
-      <header class="header">
-        <h1>Manifest Generator</h1>
-        <p>Create Minecraft Addons with Ease</p>
-        <div class="theme-toggle" id="theme-toggle">
-          <i class="fas fa-moon"></i>
-        </div>
-      </header>
+<body class="min-h-screen">
 
-      <div class="grid" id="selection-grid">
-        <div class="card" data-pack="behavior">
-          <i class="fas fa-cube card-icon"></i>
-          <h3>Behavior Pack</h3>
-          <p>Create custom game mechanics, entities, and behaviors</p>
-          <button class="btn mt-2">
-            <i class="fas fa-magic"></i>
-            Generate
-          </button>
-        </div>
+<div class="max-w-[1400px] mx-auto px-4 py-6">
 
-        <div class="card" data-pack="resources">
-          <i class="fas fa-paint-brush card-icon"></i>
-          <h3>Resource Pack</h3>
-          <p>Design custom textures, models, and UI elements</p>
-          <button class="btn mt-2">
-            <i class="fas fa-palette"></i>
-            Generate
-          </button>
+  <!-- Header -->
+  <div class="mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#7289da20;border:1px solid #7289da40">
+        <i class="fa-solid fa-cube text-[#7289DA]"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-xl leading-tight" style="color:#ffffff;font-family:'Outfit',sans-serif;">Manifest Generator</h1>
+        <p class="text-xs" style="color:#99aab5;">Minecraft Bedrock Edition · Add-On Pack Tools</p>
+      </div>
+    </div>
+    <div class="text-xs font-mono px-2 py-1 rounded" style="background:#282b30;color:#7289DA;border:1px solid #42454960;">v2 / v3</div>
+  </div>
+
+  <!-- Pack Type Tabs -->
+  <div class="flex gap-0 border-b mb-6" style="border-color:#42454960;">
+    <button class="tab-btn active px-5 py-3 font-semibold text-sm" data-tab="behavior" onclick="switchTab('behavior')">
+      <i class="fa-solid fa-gears mr-2 text-xs"></i>Behavior Pack
+    </button>
+    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="resource" onclick="switchTab('resource')">
+      <i class="fa-solid fa-palette mr-2 text-xs"></i>Resource Pack
+    </button>
+    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="skinpack" onclick="switchTab('skinpack')">
+      <i class="fa-solid fa-shirt mr-2 text-xs"></i>Skin Pack
+    </button>
+    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="world" onclick="switchTab('world')">
+      <i class="fa-solid fa-earth-americas mr-2 text-xs"></i>World Template
+    </button>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+    <!-- LEFT: Form -->
+    <div class="flex flex-col gap-4">
+
+      <!-- Format Version -->
+      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-file-code mr-2 text-[#7289DA]"></i>Manifest Settings</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="lbl"><i class="fa-solid fa-code-branch"></i>Format Version</label>
+            <select id="format_version" class="inp" onchange="updatePreview()">
+              <option value="2" selected>2 (Stable)</option>
+              <option value="3">3 (Preview)</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl"><i class="fa-solid fa-tag"></i>Pack Name</label>
+            <input type="text" id="pack_name" class="inp" placeholder="My Awesome Pack" oninput="updatePreview()">
+          </div>
+          <div class="col-span-2">
+            <label class="lbl"><i class="fa-solid fa-align-left"></i>Description</label>
+            <input type="text" id="pack_desc" class="inp" placeholder="What does your pack do?" oninput="updatePreview()">
+          </div>
+          <div>
+            <label class="lbl"><i class="fa-solid fa-star"></i>Version</label>
+            <input type="text" id="pack_version" class="inp" placeholder="1.0.0" oninput="updatePreview()">
+          </div>
+          <div>
+            <label class="lbl"><i class="fa-solid fa-layer-group"></i>Min Engine Ver</label>
+            <input type="text" id="min_engine" class="inp" list="engine-presets" placeholder="1.21.0" oninput="updatePreview()">
+            <datalist id="engine-presets">
+              <option value="1.21.0"></option>
+              <option value="1.20.0"></option>
+              <option value="1.19.0"></option>
+              <option value="1.18.0"></option>
+              <option value="1.17.0"></option>
+            </datalist>
+          </div>
         </div>
       </div>
 
-      <div id="form-container" class="form-container hidden">
-        <button class="back-btn" id="back-btn">
-          <i class="fas fa-arrow-left"></i> Back
+      <!-- Metadata -->
+      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="collapse-toggle flex items-center justify-between mb-4" onclick="toggleSection('meta-body')">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-info-circle mr-2 text-[#7289DA]"></i>Metadata</span>
+          <i class="fa-solid fa-chevron-down text-xs" id="meta-icon" style="color:#72767d; transition:transform 0.2s;"></i>
+        </div>
+        <div id="meta-body">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="lbl"><i class="fa-solid fa-user"></i>Author</label>
+              <input type="text" id="meta_author" class="inp" placeholder="Your name" oninput="updatePreview()">
+            </div>
+            <div>
+              <label class="lbl"><i class="fa-solid fa-scale-balanced"></i>License</label>
+              <input type="text" id="meta_license" class="inp" placeholder="MIT" oninput="updatePreview()">
+            </div>
+            <div class="col-span-2">
+              <label class="lbl"><i class="fa-solid fa-link"></i>URL</label>
+              <input type="text" id="meta_url" class="inp" placeholder="https://example.com" oninput="updatePreview()">
+            </div>
+            <div class="col-span-2">
+              <label class="lbl"><i class="fa-solid fa-box"></i>Product Type</label>
+              <select id="meta_product" class="inp" onchange="updatePreview()">
+                <option value="">None</option>
+                <option value="addon">addon</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules -->
+      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-puzzle-piece mr-2 text-[#7289DA]"></i>Modules</span>
+          <button class="btn-sm-ghost" onclick="addModule()"><i class="fa-solid fa-plus"></i>Add Module</button>
+        </div>
+        <div id="modules-container" class="flex flex-col gap-3"></div>
+      </div>
+
+      <!-- Dependencies -->
+      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-link mr-2 text-[#7289DA]"></i>Dependencies</span>
+          <div class="flex gap-2">
+            <button class="btn-sm-ghost" onclick="addDep('uuid')"><i class="fa-solid fa-fingerprint"></i>Pack</button>
+            <button class="btn-sm-ghost" onclick="addDep('module')"><i class="fa-solid fa-code"></i>Script</button>
+          </div>
+        </div>
+        <div id="deps-container" class="flex flex-col gap-3"></div>
+        <p id="deps-hint" class="text-xs mt-2" style="color:#4f545c;">Add pack UUIDs or @minecraft/server script modules</p>
+      </div>
+
+      <!-- Capabilities (BP/RP only) -->
+      <div id="capabilities-section" class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="collapse-toggle flex items-center justify-between mb-4" onclick="toggleSection('cap-body')">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-bolt mr-2 text-[#7289DA]"></i>Capabilities <span class="badge">optional</span></span>
+          <i class="fa-solid fa-chevron-down text-xs" id="cap-icon" style="color:#72767d; transition:transform 0.2s;"></i>
+        </div>
+        <div id="cap-body">
+          <div class="grid grid-cols-2 gap-3 text-sm" style="color:#b9bbbe;">
+            <label class="cap-check"><input type="checkbox" value="chemistry" onchange="updatePreview()"><span>chemistry</span></label>
+            <label class="cap-check"><input type="checkbox" value="editorExtension" onchange="updatePreview()"><span>editorExtension</span></label>
+            <label class="cap-check"><input type="checkbox" value="experimental_custom_ui" onchange="updatePreview()"><span>experimental_custom_ui</span></label>
+            <label class="cap-check"><input type="checkbox" value="script_eval" onchange="updatePreview()"><span>script_eval</span></label>
+            <label class="cap-check"><input type="checkbox" value="raytraced" onchange="updatePreview()"><span>raytraced</span></label>
+            <label class="cap-check"><input type="checkbox" value="pbr" onchange="updatePreview()"><span>pbr</span></label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subpacks -->
+      <div id="subpacks-section" class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-folder-tree mr-2 text-[#7289DA]"></i>Subpacks <span class="badge">optional</span></span>
+          <button class="btn-sm-ghost" onclick="addSubpack()"><i class="fa-solid fa-plus"></i>Add</button>
+        </div>
+        <div id="subpacks-container" class="flex flex-col gap-3"></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 flex-wrap">
+        <button class="btn-blurple flex-1" onclick="downloadManifest()">
+          <i class="fa-solid fa-download"></i>Download manifest.json
         </button>
-        <h2 id="form-title">Pack Generator</h2>
-        
-        <form id="manifest-form">
-          <input type="hidden" id="packType" name="packType">
-          
-          <div class="form-group">
-            <label for="name" class="form-label">
-              <i class="fas fa-tag"></i> Pack Name
-            </label>
-            <input type="text" id="name" class="form-input" placeholder="My Awesome Pack" required>
-          </div>
+        <button class="btn-ghost" onclick="copyJSON()">
+          <i class="fa-solid fa-copy"></i>Copy
+        </button>
+        <button class="btn-ghost" onclick="resetForm()">
+          <i class="fa-solid fa-rotate-left"></i>Reset
+        </button>
+      </div>
+    </div>
 
-          <div class="form-group">
-            <label for="description" class="form-label">
-              <i class="fas fa-align-left"></i> Description
-            </label>
-            <input type="text" id="description" class="form-input" placeholder="What does your pack do?" required>
+    <!-- RIGHT: Live Preview -->
+    <div class="flex flex-col gap-4">
+      <div class="rounded-xl p-5 sticky top-4" style="background:#282b30;border:1px solid #42454960;">
+        <div class="flex items-center justify-between mb-4">
+          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-eye mr-2 text-[#7289DA]"></i>Live Preview</span>
+          <div class="flex items-center gap-2">
+            <span id="validity-badge" class="text-xs font-mono px-2 py-0.5 rounded" style="background:#43b58120;color:#43b581;border:1px solid #43b58140;">valid json</span>
+            <button class="btn-ghost text-xs py-1 px-3" onclick="copyJSON()"><i class="fa-solid fa-copy mr-1"></i>Copy</button>
           </div>
+        </div>
+        <pre id="live-preview"></pre>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="version" class="form-label">
-                <i class="fas fa-code-branch"></i> Version
-              </label>
-              <input type="text" id="version" class="form-input" placeholder="1.0.0" required>
+        <!-- UUID helper -->
+        <div class="mt-4 p-3 rounded-lg text-xs" style="background:#1e2124;border:1px solid #42454960;">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold" style="color:#99aab5;"><i class="fa-solid fa-fingerprint mr-1 text-[#7289DA]"></i>UUID Generator</span>
+            <button class="btn-sm-ghost text-xs py-1" onclick="genUUIDs()"><i class="fa-solid fa-dice mr-1"></i>Generate 2</button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2">
+              <span style="color:#72767d;" class="w-16 shrink-0">Header:</span>
+              <span id="uuid-header" class="font-mono" style="color:#a8ff78;font-size:0.72rem;word-break:break-all;"></span>
+              <button onclick="copyUUID('uuid-header')" class="shrink-0 ml-auto" title="Copy" style="color:#7289DA;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-copy text-xs"></i></button>
             </div>
-
-            <div class="form-group">
-              <label for="minimum_api_version" class="form-label">
-                <i class="fas fa-layer-group"></i> Min API Version
-              </label>
-              <input type="text" id="minimum_api_version" class="form-input" placeholder="1.0.0" required>
+            <div class="flex items-center gap-2">
+              <span style="color:#72767d;" class="w-16 shrink-0">Module:</span>
+              <span id="uuid-module" class="font-mono" style="color:#a8ff78;font-size:0.72rem;word-break:break-all;"></span>
+              <button onclick="copyUUID('uuid-module')" class="shrink-0 ml-auto" title="Copy" style="color:#7289DA;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-copy text-xs"></i></button>
             </div>
           </div>
-
-          <div class="form-group">
-            <label for="author" class="form-label">
-              <i class="fas fa-user"></i> Author
-            </label>
-            <input type="text" id="author" class="form-input" placeholder="Your name" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-link"></i> Dependencies
-            </label>
-            <div id="dependencies-container" class="dynamic-container"></div>
-            <button type="button" class="btn btn-secondary" onclick="addDependency()">
-              <i class="fas fa-plus"></i> Add Dependency
-            </button>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">
-              <i class="fas fa-folder-tree"></i> Subpacks
-            </label>
-            <div id="subpacks-container" class="dynamic-container"></div>
-            <button type="button" class="btn btn-secondary" onclick="addSubpack()">
-              <i class="fas fa-plus"></i> Add Subpack
-            </button>
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="preview-btn">
-              <i class="fas fa-eye"></i> Preview
-            </button>
-            <button type="button" class="btn" id="generate-btn">
-              <i class="fas fa-file-code"></i> Generate
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div id="preview-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Manifest Preview</h3>
-        <button class="modal-close" id="modal-close">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <pre id="preview-content"></pre>
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:#43b581;"></i><span id="toast-msg">Copied!</span></div>
+
+<script>
+const SCRIPT_MODULES = ['@minecraft/server','@minecraft/server-ui','@minecraft/server-admin','@minecraft/server-editor','@minecraft/server-gametest','@minecraft/server-net'];
+
+let currentTab = 'behavior';
+let moduleCount = 0;
+let depCount = 0;
+let subpackCount = 0;
+
+const MODULE_TYPES = {
+  behavior: ['data','script','client_data','javascript'],
+  resource: ['resources','client_data'],
+  skinpack: ['skin_pack'],
+  world: ['world_template','data','resources']
+};
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+    if (b.dataset.tab !== tab) b.style.color = '#72767d';
+    else b.style.color = '';
+  });
+  document.getElementById('capabilities-section').style.display = (tab === 'skinpack') ? 'none' : '';
+  document.getElementById('subpacks-section').style.display = (tab === 'behavior' || tab === 'resource') ? '' : 'none';
+  document.getElementById('modules-container').innerHTML = '';
+  moduleCount = 0;
+  addModule();
+  updatePreview();
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? '' : 'none';
+  const iconId = id === 'meta-body' ? 'meta-icon' : 'cap-icon';
+  document.getElementById(iconId).style.transform = isHidden ? '' : 'rotate(-90deg)';
+}
+
+function addModule() {
+  moduleCount++;
+  const id = moduleCount;
+  const types = MODULE_TYPES[currentTab] || ['data'];
+  const opts = types.map(t => `<option value="${t}">${t}</option>`).join('');
+  const uuid = generateUUID();
+  const div = document.createElement('div');
+  div.className = 'module-card';
+  div.id = `module-${id}`;
+  div.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold" style="color:#99aab5;">MODULE ${id}</span>
+      <button class="btn-danger" onclick="removeEl('module-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-  </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-shapes"></i>Type</label>
+        <select class="inp mod-type" style="font-size:0.82rem" onchange="updatePreview()">${opts}</select>
+      </div>
+      <div>
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
+        <input type="text" class="inp mod-version" style="font-size:0.82rem" value="1.0.0" oninput="updatePreview()">
+      </div>
+      <div class="col-span-2">
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-fingerprint"></i>UUID</label>
+        <div class="flex gap-2">
+          <input type="text" class="inp mod-uuid" style="font-size:0.72rem;font-family:'JetBrains Mono',monospace;" value="${uuid}" oninput="updatePreview()">
+          <button type="button" onclick="regenUUID(this)" class="btn-ghost text-xs py-1 px-2 shrink-0" title="Regenerate"><i class="fa-solid fa-dice"></i></button>
+        </div>
+      </div>
+      <div class="col-span-2">
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-align-left"></i>Description <span style="color:#4f545c;text-transform:none;font-weight:400;">(optional)</span></label>
+        <input type="text" class="inp mod-desc" style="font-size:0.82rem" placeholder="Module description" oninput="updatePreview()">
+      </div>
+    </div>`;
+  document.getElementById('modules-container').appendChild(div);
+  updatePreview();
+}
 
-  <script src="script.js"></script>
+function addDep(type) {
+  depCount++;
+  const id = depCount;
+  const div = document.createElement('div');
+  div.className = 'dep-card';
+  div.id = `dep-${id}`;
+  document.getElementById('deps-hint').style.display = 'none';
+
+  if (type === 'uuid') {
+    const uuid = generateUUID();
+    div.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold" style="color:#99aab5;">PACK DEPENDENCY</span>
+        <button class="btn-danger" onclick="removeEl('dep-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div class="col-span-2">
+          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-fingerprint"></i>Pack UUID</label>
+          <div class="flex gap-2">
+            <input type="text" class="inp dep-uuid" style="font-size:0.72rem;font-family:'JetBrains Mono',monospace;" value="${uuid}" oninput="updatePreview()">
+            <button type="button" onclick="regenUUID(this)" class="btn-ghost text-xs py-1 px-2 shrink-0"><i class="fa-solid fa-dice"></i></button>
+          </div>
+        </div>
+        <div class="col-span-2">
+          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
+          <input type="text" class="inp dep-version" style="font-size:0.82rem" value="1.0.0" oninput="updatePreview()">
+        </div>
+      </div>`;
+  } else {
+    const opts = SCRIPT_MODULES.map(m => `<option value="${m}">${m}</option>`).join('');
+    div.innerHTML = `
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold" style="color:#99aab5;">SCRIPT MODULE DEPENDENCY</span>
+        <button class="btn-danger" onclick="removeEl('dep-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code"></i>Module Name</label>
+          <select class="inp dep-module" style="font-size:0.82rem" onchange="updatePreview()">${opts}</select>
+        </div>
+        <div>
+          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
+          <input type="text" class="inp dep-mod-version" style="font-size:0.82rem" value="1.9.0" oninput="updatePreview()">
+        </div>
+      </div>`;
+  }
+  document.getElementById('deps-container').appendChild(div);
+  updatePreview();
+}
+
+function addSubpack() {
+  subpackCount++;
+  const id = subpackCount;
+  const div = document.createElement('div');
+  div.className = 'dep-card';
+  div.id = `subpack-${id}`;
+  div.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-xs font-semibold" style="color:#99aab5;">SUBPACK ${id}</span>
+      <button class="btn-danger" onclick="removeEl('subpack-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div>
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-folder"></i>Folder Name</label>
+        <input type="text" class="inp sub-folder" style="font-size:0.82rem" placeholder="highres" oninput="updatePreview()">
+      </div>
+      <div>
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-tag"></i>Name</label>
+        <input type="text" class="inp sub-name" style="font-size:0.82rem" placeholder="High Resolution" oninput="updatePreview()">
+      </div>
+      <div class="col-span-2">
+        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-memory"></i>Memory Tier</label>
+        <input type="number" class="inp sub-tier" style="font-size:0.82rem" value="1" min="0" max="4" oninput="updatePreview()">
+      </div>
+    </div>`;
+  document.getElementById('subpacks-container').appendChild(div);
+  updatePreview();
+}
+
+function removeEl(id) { document.getElementById(id)?.remove(); }
+function regenUUID(btn) {
+  const inp = btn.previousElementSibling;
+  inp.value = generateUUID();
+  updatePreview();
+}
+
+function parseVersion(str) {
+  const parts = (str || '1.0.0').split('.').map(v => parseInt(v) || 0);
+  while (parts.length < 3) parts.push(0);
+  return parts.slice(0, 3);
+}
+
+function buildManifest() {
+  const fv = parseInt(document.getElementById('format_version').value);
+  const name = document.getElementById('pack_name').value || 'My Pack';
+  const desc = document.getElementById('pack_desc').value || 'My pack description';
+  const ver = parseVersion(document.getElementById('pack_version').value);
+  const minEng = parseVersion(document.getElementById('min_engine').value);
+
+  const headerUUID = document.getElementById('modules-container').querySelector('.mod-uuid')?.value || generateUUID();
+
+  const manifest = { format_version: fv, header: { name, description: desc, uuid: headerUUID, version: ver, min_engine_version: minEng } };
+
+  const modules = [];
+  document.querySelectorAll('#modules-container .module-card').forEach(card => {
+    const mod = {
+      type: card.querySelector('.mod-type').value,
+      uuid: card.querySelector('.mod-uuid').value || generateUUID(),
+      version: parseVersion(card.querySelector('.mod-version').value)
+    };
+    const desc = card.querySelector('.mod-desc').value;
+    if (desc) mod.description = desc;
+    modules.push(mod);
+  });
+  if (modules.length > 0) manifest.modules = modules;
+
+  const deps = [];
+  document.querySelectorAll('#deps-container .dep-card').forEach(card => {
+    if (card.querySelector('.dep-uuid')) {
+      deps.push({ uuid: card.querySelector('.dep-uuid').value, version: parseVersion(card.querySelector('.dep-version').value) });
+    } else if (card.querySelector('.dep-module')) {
+      deps.push({ module_name: card.querySelector('.dep-module').value, version: card.querySelector('.dep-mod-version').value });
+    }
+  });
+  if (deps.length > 0) manifest.dependencies = deps;
+
+  const caps = Array.from(document.querySelectorAll('#cap-body input[type=checkbox]:checked')).map(c => c.value);
+  if (caps.length > 0) manifest.capabilities = caps;
+
+  const subpacks = [];
+  document.querySelectorAll('#subpacks-container .dep-card').forEach(card => {
+    subpacks.push({
+      folder_name: card.querySelector('.sub-folder').value || 'subpack',
+      name: card.querySelector('.sub-name').value || 'Subpack',
+      memory_tier: parseInt(card.querySelector('.sub-tier').value) || 1
+    });
+  });
+  if (subpacks.length > 0) manifest.subpacks = subpacks;
+
+  const author = document.getElementById('meta_author').value;
+  const license = document.getElementById('meta_license').value;
+  const url = document.getElementById('meta_url').value;
+  const product = document.getElementById('meta_product').value;
+
+  if (author || license || url || product) {
+    manifest.metadata = {};
+    if (author) manifest.metadata.authors = [author];
+    if (license) manifest.metadata.license = license;
+    if (url) manifest.metadata.url = url;
+    if (product) manifest.metadata.product_type = product;
+    manifest.metadata.generated_with = { 'manifest-generator': ['1.0.0'] };
+  }
+
+  return manifest;
+}
+
+function syntaxHighlight(json) {
+  json = json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+    let cls = 'json-num';
+    if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-str'; }
+    else if (/true|false/.test(match)) cls = 'json-bool';
+    else if (/null/.test(match)) cls = 'json-null';
+    return `<span class="${cls}">${match}</span>`;
+  });
+}
+
+function updatePreview() {
+  try {
+    const manifest = buildManifest();
+    const json = JSON.stringify(manifest, null, 2);
+    document.getElementById('live-preview').innerHTML = syntaxHighlight(json);
+    document.getElementById('validity-badge').textContent = 'valid json';
+    document.getElementById('validity-badge').style.background = '#43b58120';
+    document.getElementById('validity-badge').style.color = '#43b581';
+    document.getElementById('validity-badge').style.borderColor = '#43b58140';
+  } catch(e) {
+    document.getElementById('validity-badge').textContent = 'error';
+    document.getElementById('validity-badge').style.background = '#ed424520';
+    document.getElementById('validity-badge').style.color = '#ed4245';
+    document.getElementById('validity-badge').style.borderColor = '#ed424540';
+  }
+}
+
+function downloadManifest() {
+  const manifest = buildManifest();
+  const json = JSON.stringify(manifest, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'manifest.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('manifest.json downloaded!');
+}
+
+function copyJSON() {
+  const manifest = buildManifest();
+  navigator.clipboard.writeText(JSON.stringify(manifest, null, 2));
+  showToast('Copied to clipboard!');
+}
+
+function copyUUID(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text);
+  showToast('UUID copied!');
+}
+
+function genUUIDs() {
+  document.getElementById('uuid-header').textContent = generateUUID();
+  document.getElementById('uuid-module').textContent = generateUUID();
+}
+
+function resetForm() {
+  document.getElementById('pack_name').value = '';
+  document.getElementById('pack_desc').value = '';
+  document.getElementById('pack_version').value = '';
+  document.getElementById('min_engine').value = '';
+  document.getElementById('meta_author').value = '';
+  document.getElementById('meta_license').value = '';
+  document.getElementById('meta_url').value = '';
+  document.getElementById('meta_product').value = '';
+  document.querySelectorAll('#cap-body input[type=checkbox]').forEach(c => c.checked = false);
+  document.getElementById('modules-container').innerHTML = '';
+  document.getElementById('deps-container').innerHTML = '';
+  document.getElementById('subpacks-container').innerHTML = '';
+  moduleCount = 0; depCount = 0; subpackCount = 0;
+  document.getElementById('deps-hint').style.display = '';
+  addModule();
+  updatePreview();
+  showToast('Form reset');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function generateUUID() {
+  let d = new Date().getTime();
+  if (typeof performance !== 'undefined' && typeof performance.now === 'function') d += performance.now();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (d + Math.random() * 16) % 16 | 0; d = Math.floor(d / 16);
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  addModule();
+  genUUIDs();
+  updatePreview();
+});
+</script>
 </body>
 </html>
