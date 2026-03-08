@@ -2,691 +2,468 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>MCBE Manifest Generator</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        discord: {
-          blurple: '#7289DA',
-          blurple2: '#5b73c7',
-          dark1: '#1e2124',
-          dark2: '#282b30',
-          dark3: '#36393e',
-          dark4: '#424549',
-          light: '#99aab5',
-          white: '#ffffff',
-        }
-      },
-      fontFamily: {
-        outfit: ['Outfit', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace'],
-      }
-    }
-  }
-}
-</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Mono&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round">
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: 'Outfit', sans-serif; background: #1e2124; color: #dcddde; }
+:root {
+  --md-primary:#BBC4FF;--md-on-primary:#222B7A;--md-primary-container:#3A4492;--md-on-primary-cont:#DDE1FF;
+  --md-secondary:#C4C6DD;--md-on-secondary:#2C2F42;--md-secondary-cont:#434659;--md-on-secondary-cont:#E0E1F8;
+  --md-tertiary:#E8B9D5;--md-on-tertiary:#47253B;--md-tertiary-cont:#603B52;--md-on-tertiary-cont:#FFD8EE;
+  --md-error:#FFB4AB;--md-error-cont:#93000A;--md-on-error:#690005;
+  --md-bg:#121318;--md-on-bg:#E4E1E9;--md-surface:#121318;--md-on-surface:#E4E1E9;
+  --md-surface-variant:#44464F;--md-on-surface-variant:#C5C6D0;
+  --md-outline:#8E9099;--md-outline-variant:#44464F;
+  --md-surf-lowest:#0D0E13;--md-surf-low:#1A1B21;--md-surf:#1E1F25;--md-surf-high:#292A30;--md-surf-highest:#33343A;
+  --md-inverse-surface:#E4E1E9;--md-inverse-on-surface:#313036;--md-inverse-primary:#4B5BB5;
+  --md-state-hover:rgba(187,196,255,0.08);--md-state-press:rgba(187,196,255,0.16);
+  --shape-sm:8px;--shape-md:12px;--shape-lg:16px;--shape-xl:28px;--shape-full:9999px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Google Sans',sans-serif;font-size:.875rem;line-height:1.43;background:var(--md-bg);color:var(--md-on-surface);min-height:100dvh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--md-outline-variant);border-radius:99px;}
+::-webkit-scrollbar-thumb:hover{background:var(--md-outline);}
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #1e2124; }
-  ::-webkit-scrollbar-thumb { background: #424549; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #7289DA; }
+/* TOP APP BAR */
+.top-bar{position:sticky;top:0;z-index:50;background:var(--md-surf-low);border-bottom:1px solid var(--md-outline-variant);display:flex;align-items:center;padding:0 16px;height:64px;gap:4px;}
+.tb-leading{display:flex;align-items:center;gap:12px;flex:1;}
+.app-icon{width:40px;height:40px;border-radius:var(--shape-md);background:var(--md-primary-container);display:grid;place-items:center;color:var(--md-on-primary-cont);flex-shrink:0;}
+.app-icon .mi{font-size:20px;}
+.app-title{font-size:1.125rem;font-weight:700;color:var(--md-on-surface);}
+.app-sub{font-size:.75rem;color:var(--md-on-surface-variant);}
+.tb-trailing{display:flex;align-items:center;gap:4px;}
+.ver-badge{font-size:.69rem;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:var(--shape-full);background:var(--md-primary-container);color:var(--md-on-primary-cont);}
 
-  .tab-btn { transition: all 0.2s ease; border-bottom: 2px solid transparent; }
-  .tab-btn.active { color: #7289DA; border-bottom-color: #7289DA; }
-  .tab-btn:not(.active):hover { color: #b9bbbe; border-bottom-color: #4f545c; }
+/* ICON BUTTON */
+.ib{width:40px;height:40px;border-radius:var(--shape-full);background:transparent;border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-on-surface-variant);position:relative;overflow:hidden;transition:color .2s;}
+.ib::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--md-state-hover);opacity:0;transition:opacity .2s;}
+.ib:hover::before{opacity:1;}.ib:active::before{background:var(--md-state-press);opacity:1;}
 
-  .form-section { animation: fadeSlide 0.25s ease; }
-  @keyframes fadeSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+/* NAV TABS */
+.nav-area{background:var(--md-surf-low);border-bottom:1px solid var(--md-outline-variant);padding:0 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
+.nav-area::-webkit-scrollbar{display:none;}
+.seg-tabs{display:inline-flex;}
+.seg-tab{position:relative;overflow:hidden;padding:14px 18px 12px;font-size:.8125rem;font-weight:700;color:var(--md-on-surface-variant);background:transparent;border:none;cursor:pointer;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-family:'Google Sans',sans-serif;}
+.seg-tab .mi{font-size:18px;}.seg-tab::before{content:'';position:absolute;inset:0;background:var(--md-state-hover);opacity:0;transition:opacity .2s;}
+.seg-tab:hover::before{opacity:1;}.seg-tab:hover{color:var(--md-on-surface);}
+.seg-tab.active{color:var(--md-primary);border-bottom-color:var(--md-primary);}
+.seg-tab.active::before{opacity:0;}
 
-  .inp {
-    width: 100%; padding: 0.55rem 0.9rem;
-    background: #1e2124; border: 1px solid #42454980;
-    border-radius: 6px; color: #dcddde; font-family: 'Outfit', sans-serif; font-size: 0.9rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none;
-  }
-  .inp:focus { border-color: #7289DA; box-shadow: 0 0 0 3px #7289da20; }
-  .inp::placeholder { color: #4f545c; }
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 420px;gap:16px;padding:16px;max-width:1320px;margin:0 auto;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}}
 
-  select.inp option { background: #282b30; }
+/* CARDS */
+.card{background:var(--md-surf);border-radius:var(--shape-xl);padding:24px;position:relative;overflow:hidden;}
+.card+.card{margin-top:12px;}
+.card-head{font-size:1rem;font-weight:700;color:var(--md-on-surface);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.lead-icon{width:32px;height:32px;border-radius:var(--shape-sm);background:var(--md-secondary-cont);display:grid;place-items:center;color:var(--md-on-secondary-cont);font-size:16px;flex-shrink:0;}
 
-  .lbl { display: block; font-size: 0.78rem; font-weight: 600; color: #99aab5; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 5px; }
-  .lbl i { margin-right: 5px; color: #7289DA; }
+/* FIELDS */
+.fg{margin-bottom:14px;}.fg:last-child{margin-bottom:0;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:540px){.frow{grid-template-columns:1fr;}}
+.fl{font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.fl .mi{font-size:13px;color:var(--md-primary);}
+.inp,.sel{width:100%;padding:13px 15px;background:var(--md-surf-high);border:1px solid var(--md-outline-variant);border-radius:var(--shape-md);color:var(--md-on-surface);font-family:'Google Sans',sans-serif;font-size:.875rem;transition:border-color .2s,box-shadow .2s,background .2s;outline:none;caret-color:var(--md-primary);}
+.inp::placeholder{color:var(--md-on-surface-variant);opacity:.5;}
+.inp:hover,.sel:hover{border-color:var(--md-on-surface-variant);background:var(--md-surf-highest);}
+.inp:focus,.sel:focus{border-color:var(--md-primary);border-width:2px;box-shadow:0 0 0 2px color-mix(in srgb,var(--md-primary) 14%,transparent);background:var(--md-surf-high);}
+.sel{cursor:pointer;}.sel option{background:var(--md-surf-high);}
+.mono{font-family:'Google Sans Mono',monospace;font-size:.77rem;}
+.inp[type=number]{-moz-appearance:textfield;}.inp[type=number]::-webkit-inner-spin-button,.inp[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
 
-  .card-hover { transition: all 0.2s ease; }
-  .card-hover:hover { border-color: #7289DA !important; transform: translateY(-2px); box-shadow: 0 8px 24px #0006; }
+/* BUTTONS */
+.btn-f{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:var(--md-primary);color:var(--md-on-primary);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:box-shadow .2s,transform .1s;}
+.btn-f::before{content:'';position:absolute;inset:0;background:var(--md-on-primary);opacity:0;transition:opacity .2s;}
+.btn-f:hover{box-shadow:0 1px 3px #0006,0 4px 8px #0003;}.btn-f:hover::before{opacity:.08;}
+.btn-f:active{transform:scale(.98);box-shadow:none;}.btn-f:active::before{opacity:.12;}
+.btn-f .mi{font-size:18px;}
 
-  .btn-blurple {
-    background: #7289DA; color: #fff; border: none; padding: 0.6rem 1.2rem;
-    border-radius: 6px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.9rem;
-    cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-blurple:hover { background: #5b73c7; transform: translateY(-1px); box-shadow: 0 4px 12px #7289da40; }
-  .btn-blurple:active { transform: translateY(0); }
+.btn-t{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:var(--md-secondary-cont);color:var(--md-on-secondary-cont);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:box-shadow .2s,transform .1s;}
+.btn-t::before{content:'';position:absolute;inset:0;background:var(--md-on-secondary-cont);opacity:0;transition:opacity .2s;}
+.btn-t:hover{box-shadow:0 1px 3px #0006;}.btn-t:hover::before{opacity:.08;}
+.btn-t:active{transform:scale(.98);}.btn-t:active::before{opacity:.12;}
+.btn-t .mi{font-size:18px;}
 
-  .btn-ghost {
-    background: transparent; color: #99aab5; border: 1px solid #42454980;
-    padding: 0.6rem 1.2rem; border-radius: 6px; font-family: 'Outfit', sans-serif;
-    font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-ghost:hover { border-color: #7289DA; color: #7289DA; }
+.btn-o{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:transparent;color:var(--md-primary);border:1px solid var(--md-outline);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s,transform .1s;}
+.btn-o::before{content:'';position:absolute;inset:0;background:var(--md-primary);opacity:0;transition:opacity .2s;}
+.btn-o:hover{border-color:var(--md-primary);}.btn-o:hover::before{opacity:.08;}
+.btn-o:active{transform:scale(.98);}.btn-o:active::before{opacity:.12;}
+.btn-o .mi{font-size:18px;}
 
-  .btn-danger {
-    background: #ed4245; color: #fff; border: none; width: 28px; height: 28px;
-    border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .btn-danger:hover { background: #c03537; }
+.btn-sm{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:var(--shape-full);background:var(--md-secondary-cont);color:var(--md-on-secondary-cont);font-family:'Google Sans',sans-serif;font-size:.69rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s;}
+.btn-sm::before{content:'';position:absolute;inset:0;background:var(--md-on-secondary-cont);opacity:0;transition:opacity .2s;}
+.btn-sm:hover::before{opacity:.08;}.btn-sm .mi{font-size:14px;}
 
-  .btn-sm-ghost {
-    background: transparent; color: #7289DA; border: 1px dashed #7289da60;
-    padding: 0.4rem 0.8rem; border-radius: 5px; font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 5px;
-  }
-  .btn-sm-ghost:hover { border-color: #7289DA; background: #7289da10; }
+.btn-icon{width:32px;height:32px;border-radius:var(--shape-full);background:var(--md-surf-highest);border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-on-surface-variant);font-size:16px;flex-shrink:0;position:relative;overflow:hidden;transition:background .2s;}
+.btn-icon::before{content:'';position:absolute;inset:0;background:var(--md-on-surface);opacity:0;transition:opacity .2s;}
+.btn-icon:hover::before{opacity:.08;}
 
-  .section-divider { border: none; border-top: 1px solid #42454950; margin: 1.5rem 0; }
+.btn-del{width:32px;height:32px;border-radius:var(--shape-full);background:var(--md-error-cont);border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-error);font-size:16px;flex-shrink:0;transition:filter .2s;}
+.btn-del:hover{filter:brightness(1.2);}
 
-  pre#live-preview {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem; line-height: 1.7;
-    background: #1e2124; color: #a8ff78;
-    padding: 1.2rem; border-radius: 8px; overflow: auto;
-    max-height: calc(100vh - 240px); min-height: 300px;
-    border: 1px solid #42454960;
-  }
+/* CHIPS */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--shape-full);background:var(--md-surf-highest);border:1px solid var(--md-outline-variant);color:var(--md-on-surface-variant);font-size:.69rem;font-weight:700;}
+.chip-p{background:color-mix(in srgb,var(--md-primary) 15%,transparent);border-color:color-mix(in srgb,var(--md-primary) 30%,transparent);color:var(--md-primary);}
+.chip-ok{background:color-mix(in srgb,#69c96e 15%,transparent);border-color:color-mix(in srgb,#69c96e 30%,transparent);color:#69c96e;}
+.chip-err{background:color-mix(in srgb,var(--md-error) 15%,transparent);border-color:color-mix(in srgb,var(--md-error) 30%,transparent);color:var(--md-error);}
 
-  .json-key { color: #7289DA; }
-  .json-str { color: #a8ff78; }
-  .json-num { color: #f4c668; }
-  .json-bool { color: #f07178; }
-  .json-null { color: #99aab5; }
+/* SUB CARDS */
+.sc{background:var(--md-surf-low);border-radius:var(--shape-lg);padding:16px;border:1px solid var(--md-outline-variant);animation:cardIn .22s cubic-bezier(.34,1.4,.64,1);}
+@keyframes cardIn{from{opacity:0;transform:translateY(6px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sc-label{font-size:.69rem;font-weight:700;color:var(--md-primary);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.sc-label .mi{font-size:13px;}
+.sc+.sc{margin-top:10px;}
 
-  .badge {
-    display: inline-block; padding: 1px 8px; border-radius: 20px;
-    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
-    background: #7289da20; color: #7289DA; border: 1px solid #7289da40;
-    vertical-align: middle; margin-left: 6px;
-  }
+/* DIVIDER */
+.div{height:1px;background:var(--md-outline-variant);margin:16px 0;}
 
-  .cap-check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-  .cap-check input[type=checkbox] { accent-color: #7289DA; width: 15px; height: 15px; cursor: pointer; }
+/* COLLAPSE */
+.coll-btn{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;color:inherit;text-align:left;padding:0;}
+.coll-btn .chev{font-size:18px;color:var(--md-on-surface-variant);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.coll-btn.open .chev{transform:rotate(180deg);}
+.coll-body{overflow:hidden;transition:max-height .3s cubic-bezier(.4,0,.2,1),opacity .25s;max-height:0;opacity:0;}
+.coll-body.open{max-height:700px;opacity:1;}
 
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: #36393e; border: 1px solid #7289DA; color: #dcddde;
-    padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.88rem;
-    display: flex; align-items: center; gap: 8px;
-    transform: translateY(80px); opacity: 0; transition: all 0.3s ease;
-    z-index: 999; pointer-events: none;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
+/* CAPS */
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:480px){.cap-grid{grid-template-columns:1fr;}}
+.cap-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--shape-md);background:var(--md-surf-high);cursor:pointer;transition:background .2s;user-select:none;}
+.cap-row:hover{background:var(--md-surf-highest);}
+.cap-row input[type=checkbox]{display:none;}
+.cap-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--md-outline);display:grid;place-items:center;flex-shrink:0;transition:border-color .2s,background .2s;color:transparent;font-size:12px;}
+.cap-row input:checked~.cap-box{background:var(--md-primary);border-color:var(--md-primary);color:var(--md-on-primary);}
+.cap-name{font-size:.8125rem;color:var(--md-on-surface);}
 
-  .collapse-toggle { cursor: pointer; user-select: none; }
-  .collapse-toggle:hover { color: #7289DA; }
+/* PREVIEW */
+.prev-pane{position:sticky;top:93px;background:var(--md-surf);border-radius:var(--shape-xl);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100dvh - 110px);}
+.prev-head{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--md-outline-variant);flex-shrink:0;}
+pre#lp{font-family:'Google Sans Mono',monospace;font-size:.77rem;line-height:1.8;padding:20px 24px;overflow:auto;flex:1;background:var(--md-surf-lowest);color:var(--md-on-surface);margin:0;}
+.jk{color:var(--md-primary);}.js{color:#9ddf80;}.jn{color:#f4c668;}.jb{color:var(--md-tertiary);}.jnull{color:var(--md-on-surface-variant);}
 
-  .module-card { background: #1e2124; border: 1px solid #42454960; border-radius: 8px; padding: 1rem; }
-  .dep-card { background: #1e2124; border: 1px solid #42454960; border-radius: 8px; padding: 1rem; }
+/* UUID PANEL */
+.uuid-panel{padding:16px 24px;border-top:1px solid var(--md-outline-variant);background:var(--md-surf);flex-shrink:0;}
+.uuid-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
+.uuid-tag{font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);width:52px;flex-shrink:0;letter-spacing:.04em;text-transform:uppercase;}
+.uuid-val{font-family:'Google Sans Mono',monospace;font-size:.72rem;line-height:1;color:#9ddf80;flex:1;word-break:break-all;}
 
-  @media (max-width: 768px) {
-    pre#live-preview { max-height: 300px; }
-  }
+/* ACTIONS */
+.actions{display:flex;gap:10px;flex-wrap:wrap;padding:16px 0 4px;}
+
+/* EMPTY */
+.empty{text-align:center;padding:20px 10px;color:var(--md-on-surface-variant);font-size:.8125rem;border:1px dashed var(--md-outline-variant);border-radius:var(--shape-lg);}
+.empty .mi{font-size:28px;display:block;margin-bottom:6px;color:var(--md-outline);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);padding:12px 20px;border-radius:var(--shape-md);font-size:.875rem;display:flex;align-items:center;gap:10px;z-index:999;pointer-events:none;opacity:0;transition:transform .3s cubic-bezier(.34,1.3,.64,1),opacity .25s;white-space:nowrap;box-shadow:0 4px 16px #0008;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast .mi{color:var(--md-inverse-primary);font-size:18px;}
+
+/* FAB */
+.fab{display:none;}
+@media(max-width:600px){
+  .fab{display:flex;align-items:center;gap:12px;position:fixed;bottom:20px;right:16px;z-index:40;background:var(--md-primary-container);color:var(--md-on-primary-cont);border:none;border-radius:var(--shape-lg);padding:14px 20px;font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;box-shadow:0 3px 8px #0006,0 8px 24px #0004;cursor:pointer;}
+  .fab .mi{font-size:22px;}
+  .prev-pane{position:relative;top:0;max-height:none;}
+  pre#lp{max-height:320px;}
+  .layout{grid-template-columns:1fr;padding:8px;gap:8px;}
+  .card{border-radius:var(--shape-lg);}
+  .actions{flex-direction:column;}
+  .actions .btn-f,.actions .btn-t,.actions .btn-o{justify-content:center;}
+}
+
+/* ANIMATE IN */
+.layout>*{animation:fadeUp .35s cubic-bezier(.4,0,.2,1) both;}
+.layout>*:nth-child(2){animation-delay:.08s;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.mi{font-family:'Material Icons Round';font-weight:normal;font-style:normal;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;display:inline-block;line-height:1;vertical-align:middle;user-select:none;}
 </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<div class="max-w-[1400px] mx-auto px-4 py-6">
-
-  <!-- Header -->
-  <div class="mb-6 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:#7289da20;border:1px solid #7289da40">
-        <i class="fa-solid fa-cube text-[#7289DA]"></i>
-      </div>
-      <div>
-        <h1 class="font-bold text-xl leading-tight" style="color:#ffffff;font-family:'Outfit',sans-serif;">Manifest Generator</h1>
-        <p class="text-xs" style="color:#99aab5;">Minecraft Bedrock Edition · Add-On Pack Tools</p>
-      </div>
-    </div>
-    <div class="text-xs font-mono px-2 py-1 rounded" style="background:#282b30;color:#7289DA;border:1px solid #42454960;">v2 / v3</div>
+<header class="top-bar">
+  <div class="tb-leading">
+    <div class="app-icon"><span class="mi">extension</span></div>
+    <div><div class="app-title">Manifest Generator</div><div class="app-sub">Minecraft Bedrock Edition</div></div>
   </div>
-
-  <!-- Pack Type Tabs -->
-  <div class="flex gap-0 border-b mb-6" style="border-color:#42454960;">
-    <button class="tab-btn active px-5 py-3 font-semibold text-sm" data-tab="behavior" onclick="switchTab('behavior')">
-      <i class="fa-solid fa-gears mr-2 text-xs"></i>Behavior Pack
-    </button>
-    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="resource" onclick="switchTab('resource')">
-      <i class="fa-solid fa-palette mr-2 text-xs"></i>Resource Pack
-    </button>
-    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="skinpack" onclick="switchTab('skinpack')">
-      <i class="fa-solid fa-shirt mr-2 text-xs"></i>Skin Pack
-    </button>
-    <button class="tab-btn px-5 py-3 font-semibold text-sm" style="color:#72767d" data-tab="world" onclick="switchTab('world')">
-      <i class="fa-solid fa-earth-americas mr-2 text-xs"></i>World Template
-    </button>
+  <div class="tb-trailing">
+    <span class="ver-badge">format v2/v3</span>
+    <button class="ib" onclick="copyJSON()" title="Copy JSON"><span class="mi">content_copy</span></button>
+    <button class="ib" onclick="downloadManifest()" title="Download"><span class="mi">download</span></button>
   </div>
+</header>
 
-  <!-- Main Layout -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<nav class="nav-area">
+  <div class="seg-tabs">
+    <button class="seg-tab active" data-tab="behavior" onclick="switchTab('behavior')"><span class="mi">settings_suggest</span>Behavior Pack</button>
+    <button class="seg-tab" data-tab="resource" onclick="switchTab('resource')"><span class="mi">palette</span>Resource Pack</button>
+    <button class="seg-tab" data-tab="skinpack" onclick="switchTab('skinpack')"><span class="mi">checkroom</span>Skin Pack</button>
+    <button class="seg-tab" data-tab="world" onclick="switchTab('world')"><span class="mi">public</span>World Template</button>
+  </div>
+</nav>
 
-    <!-- LEFT: Form -->
-    <div class="flex flex-col gap-4">
+<div class="layout">
+  <!-- FORM -->
+  <div>
 
-      <!-- Format Version -->
-      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="flex items-center justify-between mb-4">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-file-code mr-2 text-[#7289DA]"></i>Manifest Settings</span>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="lbl"><i class="fa-solid fa-code-branch"></i>Format Version</label>
-            <select id="format_version" class="inp" onchange="updatePreview()">
-              <option value="2" selected>2 (Stable)</option>
-              <option value="3">3 (Preview)</option>
-            </select>
-          </div>
-          <div>
-            <label class="lbl"><i class="fa-solid fa-tag"></i>Pack Name</label>
-            <input type="text" id="pack_name" class="inp" placeholder="My Awesome Pack" oninput="updatePreview()">
-          </div>
-          <div class="col-span-2">
-            <label class="lbl"><i class="fa-solid fa-align-left"></i>Description</label>
-            <input type="text" id="pack_desc" class="inp" placeholder="What does your pack do?" oninput="updatePreview()">
-          </div>
-          <div>
-            <label class="lbl"><i class="fa-solid fa-star"></i>Version</label>
-            <input type="text" id="pack_version" class="inp" placeholder="1.0.0" oninput="updatePreview()">
-          </div>
-          <div>
-            <label class="lbl"><i class="fa-solid fa-layer-group"></i>Min Engine Ver</label>
-            <input type="text" id="min_engine" class="inp" list="engine-presets" placeholder="1.21.0" oninput="updatePreview()">
-            <datalist id="engine-presets">
-              <option value="1.21.0"></option>
-              <option value="1.20.0"></option>
-              <option value="1.19.0"></option>
-              <option value="1.18.0"></option>
-              <option value="1.17.0"></option>
-            </datalist>
-          </div>
-        </div>
+    <div class="card">
+      <div class="card-head"><div class="lead-icon"><span class="mi">info</span></div>Pack Information</div>
+      <div class="frow">
+        <div class="fg"><label class="fl"><span class="mi">sell</span>Pack Name</label><input type="text" id="pack_name" class="inp" placeholder="My Awesome Pack" oninput="up()"></div>
+        <div class="fg"><label class="fl"><span class="mi">alt_route</span>Format Version</label><select id="format_version" class="sel" onchange="up()"><option value="2" selected>2 · Stable</option><option value="3">3 · Preview</option></select></div>
       </div>
-
-      <!-- Metadata -->
-      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="collapse-toggle flex items-center justify-between mb-4" onclick="toggleSection('meta-body')">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-info-circle mr-2 text-[#7289DA]"></i>Metadata</span>
-          <i class="fa-solid fa-chevron-down text-xs" id="meta-icon" style="color:#72767d; transition:transform 0.2s;"></i>
-        </div>
-        <div id="meta-body">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="lbl"><i class="fa-solid fa-user"></i>Author</label>
-              <input type="text" id="meta_author" class="inp" placeholder="Your name" oninput="updatePreview()">
-            </div>
-            <div>
-              <label class="lbl"><i class="fa-solid fa-scale-balanced"></i>License</label>
-              <input type="text" id="meta_license" class="inp" placeholder="MIT" oninput="updatePreview()">
-            </div>
-            <div class="col-span-2">
-              <label class="lbl"><i class="fa-solid fa-link"></i>URL</label>
-              <input type="text" id="meta_url" class="inp" placeholder="https://example.com" oninput="updatePreview()">
-            </div>
-            <div class="col-span-2">
-              <label class="lbl"><i class="fa-solid fa-box"></i>Product Type</label>
-              <select id="meta_product" class="inp" onchange="updatePreview()">
-                <option value="">None</option>
-                <option value="addon">addon</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modules -->
-      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="flex items-center justify-between mb-4">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-puzzle-piece mr-2 text-[#7289DA]"></i>Modules</span>
-          <button class="btn-sm-ghost" onclick="addModule()"><i class="fa-solid fa-plus"></i>Add Module</button>
-        </div>
-        <div id="modules-container" class="flex flex-col gap-3"></div>
-      </div>
-
-      <!-- Dependencies -->
-      <div class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="flex items-center justify-between mb-4">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-link mr-2 text-[#7289DA]"></i>Dependencies</span>
-          <div class="flex gap-2">
-            <button class="btn-sm-ghost" onclick="addDep('uuid')"><i class="fa-solid fa-fingerprint"></i>Pack</button>
-            <button class="btn-sm-ghost" onclick="addDep('module')"><i class="fa-solid fa-code"></i>Script</button>
-          </div>
-        </div>
-        <div id="deps-container" class="flex flex-col gap-3"></div>
-        <p id="deps-hint" class="text-xs mt-2" style="color:#4f545c;">Add pack UUIDs or @minecraft/server script modules</p>
-      </div>
-
-      <!-- Capabilities (BP/RP only) -->
-      <div id="capabilities-section" class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="collapse-toggle flex items-center justify-between mb-4" onclick="toggleSection('cap-body')">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-bolt mr-2 text-[#7289DA]"></i>Capabilities <span class="badge">optional</span></span>
-          <i class="fa-solid fa-chevron-down text-xs" id="cap-icon" style="color:#72767d; transition:transform 0.2s;"></i>
-        </div>
-        <div id="cap-body">
-          <div class="grid grid-cols-2 gap-3 text-sm" style="color:#b9bbbe;">
-            <label class="cap-check"><input type="checkbox" value="chemistry" onchange="updatePreview()"><span>chemistry</span></label>
-            <label class="cap-check"><input type="checkbox" value="editorExtension" onchange="updatePreview()"><span>editorExtension</span></label>
-            <label class="cap-check"><input type="checkbox" value="experimental_custom_ui" onchange="updatePreview()"><span>experimental_custom_ui</span></label>
-            <label class="cap-check"><input type="checkbox" value="script_eval" onchange="updatePreview()"><span>script_eval</span></label>
-            <label class="cap-check"><input type="checkbox" value="raytraced" onchange="updatePreview()"><span>raytraced</span></label>
-            <label class="cap-check"><input type="checkbox" value="pbr" onchange="updatePreview()"><span>pbr</span></label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subpacks -->
-      <div id="subpacks-section" class="rounded-xl p-5 form-section" style="background:#282b30;border:1px solid #42454960;">
-        <div class="flex items-center justify-between mb-4">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-folder-tree mr-2 text-[#7289DA]"></i>Subpacks <span class="badge">optional</span></span>
-          <button class="btn-sm-ghost" onclick="addSubpack()"><i class="fa-solid fa-plus"></i>Add</button>
-        </div>
-        <div id="subpacks-container" class="flex flex-col gap-3"></div>
-      </div>
-
-      <!-- Actions -->
-      <div class="flex gap-3 flex-wrap">
-        <button class="btn-blurple flex-1" onclick="downloadManifest()">
-          <i class="fa-solid fa-download"></i>Download manifest.json
-        </button>
-        <button class="btn-ghost" onclick="copyJSON()">
-          <i class="fa-solid fa-copy"></i>Copy
-        </button>
-        <button class="btn-ghost" onclick="resetForm()">
-          <i class="fa-solid fa-rotate-left"></i>Reset
-        </button>
+      <div class="fg"><label class="fl"><span class="mi">notes</span>Description</label><input type="text" id="pack_desc" class="inp" placeholder="What does your pack do?" oninput="up()"></div>
+      <div class="frow">
+        <div class="fg"><label class="fl"><span class="mi">new_releases</span>Version</label><input type="text" id="pack_version" class="inp" placeholder="1.0.0" oninput="up()"></div>
+        <div class="fg"><label class="fl"><span class="mi">layers</span>Min Engine Version</label><input type="text" id="min_engine" class="inp" list="eng-list" placeholder="1.21.0" oninput="up()"><datalist id="eng-list"><option value="1.21.0"></option><option value="1.20.80"></option><option value="1.20.0"></option><option value="1.19.0"></option><option value="1.18.0"></option></datalist></div>
       </div>
     </div>
 
-    <!-- RIGHT: Live Preview -->
-    <div class="flex flex-col gap-4">
-      <div class="rounded-xl p-5 sticky top-4" style="background:#282b30;border:1px solid #42454960;">
-        <div class="flex items-center justify-between mb-4">
-          <span class="font-semibold text-sm" style="color:#ffffff;"><i class="fa-solid fa-eye mr-2 text-[#7289DA]"></i>Live Preview</span>
-          <div class="flex items-center gap-2">
-            <span id="validity-badge" class="text-xs font-mono px-2 py-0.5 rounded" style="background:#43b58120;color:#43b581;border:1px solid #43b58140;">valid json</span>
-            <button class="btn-ghost text-xs py-1 px-3" onclick="copyJSON()"><i class="fa-solid fa-copy mr-1"></i>Copy</button>
-          </div>
+    <div class="card">
+      <button class="coll-btn" id="meta-btn" onclick="ct('meta-btn','meta-body')">
+        <div class="card-head" style="margin-bottom:0"><div class="lead-icon"><span class="mi">badge</span></div>Metadata<span class="chip chip-p" style="margin-left:6px;">optional</span></div>
+        <span class="mi chev">expand_more</span>
+      </button>
+      <div class="coll-body" id="meta-body">
+        <div class="div"></div>
+        <div class="frow">
+          <div class="fg"><label class="fl"><span class="mi">person</span>Author</label><input type="text" id="meta_author" class="inp" placeholder="Your name" oninput="up()"></div>
+          <div class="fg"><label class="fl"><span class="mi">gavel</span>License</label><input type="text" id="meta_license" class="inp" placeholder="MIT" oninput="up()"></div>
         </div>
-        <pre id="live-preview"></pre>
+        <div class="fg"><label class="fl"><span class="mi">language</span>URL</label><input type="text" id="meta_url" class="inp" placeholder="https://example.com" oninput="up()"></div>
+        <div class="fg"><label class="fl"><span class="mi">inventory_2</span>Product Type</label><select id="meta_product" class="sel" onchange="up()"><option value="">None</option><option value="addon">addon</option></select></div>
+      </div>
+    </div>
 
-        <!-- UUID helper -->
-        <div class="mt-4 p-3 rounded-lg text-xs" style="background:#1e2124;border:1px solid #42454960;">
-          <div class="flex items-center justify-between mb-2">
-            <span class="font-semibold" style="color:#99aab5;"><i class="fa-solid fa-fingerprint mr-1 text-[#7289DA]"></i>UUID Generator</span>
-            <button class="btn-sm-ghost text-xs py-1" onclick="genUUIDs()"><i class="fa-solid fa-dice mr-1"></i>Generate 2</button>
-          </div>
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2">
-              <span style="color:#72767d;" class="w-16 shrink-0">Header:</span>
-              <span id="uuid-header" class="font-mono" style="color:#a8ff78;font-size:0.72rem;word-break:break-all;"></span>
-              <button onclick="copyUUID('uuid-header')" class="shrink-0 ml-auto" title="Copy" style="color:#7289DA;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-copy text-xs"></i></button>
-            </div>
-            <div class="flex items-center gap-2">
-              <span style="color:#72767d;" class="w-16 shrink-0">Module:</span>
-              <span id="uuid-module" class="font-mono" style="color:#a8ff78;font-size:0.72rem;word-break:break-all;"></span>
-              <button onclick="copyUUID('uuid-module')" class="shrink-0 ml-auto" title="Copy" style="color:#7289DA;background:none;border:none;cursor:pointer;"><i class="fa-solid fa-copy text-xs"></i></button>
-            </div>
-          </div>
+    <div class="card">
+      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">extension</span></div>Modules<button class="btn-sm" style="margin-left:auto" onclick="addMod()"><span class="mi">add</span>Add Module</button></div>
+      <div id="mods" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">link</span></div>Dependencies
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-sm" onclick="addDep('uuid')"><span class="mi">fingerprint</span>Pack</button>
+          <button class="btn-sm" onclick="addDep('module')"><span class="mi">code</span>Script</button>
         </div>
+      </div>
+      <div id="deps" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <div class="empty" id="deps-empty"><span class="mi">link_off</span>No dependencies — add a pack UUID or script module</div>
+    </div>
+
+    <div class="card" id="cap-card">
+      <button class="coll-btn" id="cap-btn" onclick="ct('cap-btn','cap-body')">
+        <div class="card-head" style="margin-bottom:0"><div class="lead-icon"><span class="mi">bolt</span></div>Capabilities<span class="chip chip-p" style="margin-left:6px;">optional</span></div>
+        <span class="mi chev">expand_more</span>
+      </button>
+      <div class="coll-body" id="cap-body">
+        <div class="div"></div>
+        <div class="cap-grid">
+          <label class="cap-row"><input type="checkbox" value="chemistry" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">chemistry</span></label>
+          <label class="cap-row"><input type="checkbox" value="editorExtension" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">editorExtension</span></label>
+          <label class="cap-row"><input type="checkbox" value="experimental_custom_ui" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">experimental_custom_ui</span></label>
+          <label class="cap-row"><input type="checkbox" value="script_eval" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">script_eval</span></label>
+          <label class="cap-row"><input type="checkbox" value="raytraced" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">raytraced</span></label>
+          <label class="cap-row"><input type="checkbox" value="pbr" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">pbr</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="sub-card">
+      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">folder_open</span></div>Subpacks<span class="chip chip-p" style="margin-left:6px;">optional</span><button class="btn-sm" style="margin-left:auto" onclick="addSub()"><span class="mi">add</span>Add</button></div>
+      <div id="subs" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <div class="empty" id="subs-empty"><span class="mi">folder_off</span>No subpacks — useful for texture resolution tiers</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-f" onclick="downloadManifest()" style="flex:1;justify-content:center"><span class="mi">download</span>Download manifest.json</button>
+      <button class="btn-t" onclick="copyJSON()"><span class="mi">content_copy</span>Copy</button>
+      <button class="btn-o" onclick="resetForm()"><span class="mi">restart_alt</span>Reset</button>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div>
+    <div class="prev-pane">
+      <div class="prev-head">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="lead-icon" style="background:var(--md-primary-container);color:var(--md-on-primary-cont)"><span class="mi">data_object</span></div>
+          <span style="font-size:1rem;font-weight:700;color:var(--md-on-surface)">Live Preview</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="vchip" class="chip chip-ok"><span class="mi" style="font-size:11px">check_circle</span>valid</span>
+          <button class="ib" onclick="copyJSON()" title="Copy"><span class="mi" style="font-size:18px">content_copy</span></button>
+        </div>
+      </div>
+      <pre id="lp"></pre>
+      <div class="uuid-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;"><span class="mi" style="font-size:13px;color:var(--md-primary)">fingerprint</span>UUID Helper</span>
+          <button class="btn-sm" onclick="genUUIDs()"><span class="mi">casino</span>Regenerate</button>
+        </div>
+        <div class="uuid-row"><span class="uuid-tag">Header</span><span class="uuid-val" id="uh"></span><button class="btn-icon" onclick="cpUUID('uh')"><span class="mi" style="font-size:14px">content_copy</span></button></div>
+        <div class="uuid-row"><span class="uuid-tag">Module</span><span class="uuid-val" id="um"></span><button class="btn-icon" onclick="cpUUID('um')"><span class="mi" style="font-size:14px">content_copy</span></button></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:#43b581;"></i><span id="toast-msg">Copied!</span></div>
+<button class="fab" onclick="downloadManifest()"><span class="mi">download</span>Download</button>
+<div class="toast" id="toast"><span class="mi">check_circle</span><span id="toast-msg">Done!</span></div>
 
 <script>
-const SCRIPT_MODULES = ['@minecraft/server','@minecraft/server-ui','@minecraft/server-admin','@minecraft/server-editor','@minecraft/server-gametest','@minecraft/server-net'];
+const SM=['@minecraft/server','@minecraft/server-ui','@minecraft/server-admin','@minecraft/server-editor','@minecraft/server-gametest','@minecraft/server-net'];
+const MT={behavior:['data','script','client_data','javascript'],resource:['resources','client_data'],skinpack:['skin_pack'],world:['world_template','data','resources']};
+let tab='behavior',mc=0,dc=0,sc=0;
 
-let currentTab = 'behavior';
-let moduleCount = 0;
-let depCount = 0;
-let subpackCount = 0;
-
-const MODULE_TYPES = {
-  behavior: ['data','script','client_data','javascript'],
-  resource: ['resources','client_data'],
-  skinpack: ['skin_pack'],
-  world: ['world_template','data','resources']
-};
-
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-    if (b.dataset.tab !== tab) b.style.color = '#72767d';
-    else b.style.color = '';
-  });
-  document.getElementById('capabilities-section').style.display = (tab === 'skinpack') ? 'none' : '';
-  document.getElementById('subpacks-section').style.display = (tab === 'behavior' || tab === 'resource') ? '' : 'none';
-  document.getElementById('modules-container').innerHTML = '';
-  moduleCount = 0;
-  addModule();
-  updatePreview();
+function switchTab(t){
+  tab=t;
+  document.querySelectorAll('.seg-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('cap-card').style.display=t==='skinpack'?'none':'';
+  document.getElementById('sub-card').style.display=(t==='behavior'||t==='resource')?'':'none';
+  document.getElementById('mods').innerHTML='';mc=0;addMod();up();
 }
 
-function toggleSection(id) {
-  const el = document.getElementById(id);
-  const isHidden = el.style.display === 'none';
-  el.style.display = isHidden ? '' : 'none';
-  const iconId = id === 'meta-body' ? 'meta-icon' : 'cap-icon';
-  document.getElementById(iconId).style.transform = isHidden ? '' : 'rotate(-90deg)';
+function ct(btnId,bodyId){
+  const b=document.getElementById(btnId),body=document.getElementById(bodyId);
+  b.classList.toggle('open');body.classList.toggle('open');
 }
 
-function addModule() {
-  moduleCount++;
-  const id = moduleCount;
-  const types = MODULE_TYPES[currentTab] || ['data'];
-  const opts = types.map(t => `<option value="${t}">${t}</option>`).join('');
-  const uuid = generateUUID();
-  const div = document.createElement('div');
-  div.className = 'module-card';
-  div.id = `module-${id}`;
-  div.innerHTML = `
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-xs font-semibold" style="color:#99aab5;">MODULE ${id}</span>
-      <button class="btn-danger" onclick="removeEl('module-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-shapes"></i>Type</label>
-        <select class="inp mod-type" style="font-size:0.82rem" onchange="updatePreview()">${opts}</select>
-      </div>
-      <div>
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
-        <input type="text" class="inp mod-version" style="font-size:0.82rem" value="1.0.0" oninput="updatePreview()">
-      </div>
-      <div class="col-span-2">
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-fingerprint"></i>UUID</label>
-        <div class="flex gap-2">
-          <input type="text" class="inp mod-uuid" style="font-size:0.72rem;font-family:'JetBrains Mono',monospace;" value="${uuid}" oninput="updatePreview()">
-          <button type="button" onclick="regenUUID(this)" class="btn-ghost text-xs py-1 px-2 shrink-0" title="Regenerate"><i class="fa-solid fa-dice"></i></button>
-        </div>
-      </div>
-      <div class="col-span-2">
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-align-left"></i>Description <span style="color:#4f545c;text-transform:none;font-weight:400;">(optional)</span></label>
-        <input type="text" class="inp mod-desc" style="font-size:0.82rem" placeholder="Module description" oninput="updatePreview()">
-      </div>
-    </div>`;
-  document.getElementById('modules-container').appendChild(div);
-  updatePreview();
+function addMod(){
+  mc++;const id=mc;
+  const types=MT[tab]||['data'];
+  const opts=types.map(t=>`<option value="${t}">${t}</option>`).join('');
+  const uuid=guuid();
+  const d=document.createElement('div');d.className='sc';d.id='m'+id;
+  d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">extension</span>Module ${id}</div><button class="btn-del" onclick="rm('m${id}');up()"><span class="mi" style="font-size:15px">close</span></button></div>
+  <div class="frow" style="margin-bottom:10px"><div><label class="fl"><span class="mi">category</span>Type</label><select class="sel mod-type" onchange="up()">${opts}</select></div>
+  <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp mod-ver" value="1.0.0" oninput="up()"></div></div>
+  <div style="margin-bottom:10px"><label class="fl"><span class="mi">fingerprint</span>UUID</label><div style="display:flex;gap:8px"><input type="text" class="inp mono mod-uuid" value="${uuid}" oninput="up()"><button type="button" class="btn-icon" onclick="regen(this)"><span class="mi" style="font-size:14px">casino</span></button></div></div>
+  <div><label class="fl"><span class="mi">notes</span>Description <span style="font-weight:400;text-transform:none;color:var(--md-outline);margin-left:3px">(optional)</span></label><input type="text" class="inp mod-desc" placeholder="Module description" oninput="up()"></div>`;
+  document.getElementById('mods').appendChild(d);up();
 }
 
-function addDep(type) {
-  depCount++;
-  const id = depCount;
-  const div = document.createElement('div');
-  div.className = 'dep-card';
-  div.id = `dep-${id}`;
-  document.getElementById('deps-hint').style.display = 'none';
-
-  if (type === 'uuid') {
-    const uuid = generateUUID();
-    div.innerHTML = `
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs font-semibold" style="color:#99aab5;">PACK DEPENDENCY</span>
-        <button class="btn-danger" onclick="removeEl('dep-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div class="col-span-2">
-          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-fingerprint"></i>Pack UUID</label>
-          <div class="flex gap-2">
-            <input type="text" class="inp dep-uuid" style="font-size:0.72rem;font-family:'JetBrains Mono',monospace;" value="${uuid}" oninput="updatePreview()">
-            <button type="button" onclick="regenUUID(this)" class="btn-ghost text-xs py-1 px-2 shrink-0"><i class="fa-solid fa-dice"></i></button>
-          </div>
-        </div>
-        <div class="col-span-2">
-          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
-          <input type="text" class="inp dep-version" style="font-size:0.82rem" value="1.0.0" oninput="updatePreview()">
-        </div>
-      </div>`;
+function addDep(type){
+  dc++;const id=dc;const d=document.createElement('div');d.className='sc';d.id='d'+id;
+  document.getElementById('deps-empty').style.display='none';
+  if(type==='uuid'){
+    const uuid=guuid();
+    d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">package_2</span>Pack Dependency</div><button class="btn-del" onclick="rm('d${id}');chkE('deps','deps-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
+    <div style="margin-bottom:10px"><label class="fl"><span class="mi">fingerprint</span>Pack UUID</label><div style="display:flex;gap:8px"><input type="text" class="inp mono dep-uuid" value="${uuid}" oninput="up()"><button type="button" class="btn-icon" onclick="regen(this)"><span class="mi" style="font-size:14px">casino</span></button></div></div>
+    <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp dep-ver" value="1.0.0" oninput="up()"></div>`;
   } else {
-    const opts = SCRIPT_MODULES.map(m => `<option value="${m}">${m}</option>`).join('');
-    div.innerHTML = `
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-xs font-semibold" style="color:#99aab5;">SCRIPT MODULE DEPENDENCY</span>
-        <button class="btn-danger" onclick="removeEl('dep-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code"></i>Module Name</label>
-          <select class="inp dep-module" style="font-size:0.82rem" onchange="updatePreview()">${opts}</select>
-        </div>
-        <div>
-          <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-code-branch"></i>Version</label>
-          <input type="text" class="inp dep-mod-version" style="font-size:0.82rem" value="1.9.0" oninput="updatePreview()">
-        </div>
-      </div>`;
+    const opts=SM.map(m=>`<option value="${m}">${m}</option>`).join('');
+    d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">code</span>Script Module</div><button class="btn-del" onclick="rm('d${id}');chkE('deps','deps-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
+    <div class="frow"><div><label class="fl"><span class="mi">terminal</span>Module Name</label><select class="sel dep-mod" onchange="up()">${opts}</select></div>
+    <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp dep-mod-ver" value="1.9.0" oninput="up()"></div></div>`;
   }
-  document.getElementById('deps-container').appendChild(div);
-  updatePreview();
+  document.getElementById('deps').appendChild(d);up();
 }
 
-function addSubpack() {
-  subpackCount++;
-  const id = subpackCount;
-  const div = document.createElement('div');
-  div.className = 'dep-card';
-  div.id = `subpack-${id}`;
-  div.innerHTML = `
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-xs font-semibold" style="color:#99aab5;">SUBPACK ${id}</span>
-      <button class="btn-danger" onclick="removeEl('subpack-${id}');updatePreview()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-folder"></i>Folder Name</label>
-        <input type="text" class="inp sub-folder" style="font-size:0.82rem" placeholder="highres" oninput="updatePreview()">
-      </div>
-      <div>
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-tag"></i>Name</label>
-        <input type="text" class="inp sub-name" style="font-size:0.82rem" placeholder="High Resolution" oninput="updatePreview()">
-      </div>
-      <div class="col-span-2">
-        <label class="lbl" style="font-size:0.7rem"><i class="fa-solid fa-memory"></i>Memory Tier</label>
-        <input type="number" class="inp sub-tier" style="font-size:0.82rem" value="1" min="0" max="4" oninput="updatePreview()">
-      </div>
-    </div>`;
-  document.getElementById('subpacks-container').appendChild(div);
-  updatePreview();
+function addSub(){
+  sc++;const id=sc;const d=document.createElement('div');d.className='sc';d.id='s'+id;
+  document.getElementById('subs-empty').style.display='none';
+  d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">folder_special</span>Subpack ${id}</div><button class="btn-del" onclick="rm('s${id}');chkE('subs','subs-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
+  <div class="frow" style="margin-bottom:10px"><div><label class="fl"><span class="mi">folder</span>Folder Name</label><input type="text" class="inp sub-folder" placeholder="highres" oninput="up()"></div>
+  <div><label class="fl"><span class="mi">label</span>Display Name</label><input type="text" class="inp sub-name" placeholder="High Resolution" oninput="up()"></div></div>
+  <div><label class="fl"><span class="mi">memory</span>Memory Tier</label><input type="number" class="inp sub-tier" value="1" min="0" max="4" oninput="up()"></div>`;
+  document.getElementById('subs').appendChild(d);up();
 }
 
-function removeEl(id) { document.getElementById(id)?.remove(); }
-function regenUUID(btn) {
-  const inp = btn.previousElementSibling;
-  inp.value = generateUUID();
-  updatePreview();
-}
+function rm(id){document.getElementById(id)?.remove();}
+function chkE(cid,eid){if(!document.getElementById(cid).children.length)document.getElementById(eid).style.display='';}
+function regen(btn){btn.previousElementSibling.value=guuid();up();}
 
-function parseVersion(str) {
-  const parts = (str || '1.0.0').split('.').map(v => parseInt(v) || 0);
-  while (parts.length < 3) parts.push(0);
-  return parts.slice(0, 3);
-}
+function pv(s){const p=(s||'1.0.0').split('.').map(v=>parseInt(v)||0);while(p.length<3)p.push(0);return p.slice(0,3);}
 
-function buildManifest() {
-  const fv = parseInt(document.getElementById('format_version').value);
-  const name = document.getElementById('pack_name').value || 'My Pack';
-  const desc = document.getElementById('pack_desc').value || 'My pack description';
-  const ver = parseVersion(document.getElementById('pack_version').value);
-  const minEng = parseVersion(document.getElementById('min_engine').value);
-
-  const headerUUID = document.getElementById('modules-container').querySelector('.mod-uuid')?.value || generateUUID();
-
-  const manifest = { format_version: fv, header: { name, description: desc, uuid: headerUUID, version: ver, min_engine_version: minEng } };
-
-  const modules = [];
-  document.querySelectorAll('#modules-container .module-card').forEach(card => {
-    const mod = {
-      type: card.querySelector('.mod-type').value,
-      uuid: card.querySelector('.mod-uuid').value || generateUUID(),
-      version: parseVersion(card.querySelector('.mod-version').value)
-    };
-    const desc = card.querySelector('.mod-desc').value;
-    if (desc) mod.description = desc;
-    modules.push(mod);
+function build(){
+  const fv=parseInt(document.getElementById('format_version').value);
+  const name=document.getElementById('pack_name').value||'My Pack';
+  const desc=document.getElementById('pack_desc').value||'My pack description';
+  const ver=pv(document.getElementById('pack_version').value);
+  const minEng=pv(document.getElementById('min_engine').value);
+  const firstUUID=document.getElementById('mods').querySelector('.mod-uuid')?.value||guuid();
+  const m={format_version:fv,header:{name,description:desc,uuid:firstUUID,version:ver,min_engine_version:minEng}};
+  const mods=[];
+  document.querySelectorAll('#mods .sc').forEach(c=>{
+    const mod={type:c.querySelector('.mod-type').value,uuid:c.querySelector('.mod-uuid').value||guuid(),version:pv(c.querySelector('.mod-ver').value)};
+    const d=c.querySelector('.mod-desc').value;if(d)mod.description=d;mods.push(mod);
   });
-  if (modules.length > 0) manifest.modules = modules;
-
-  const deps = [];
-  document.querySelectorAll('#deps-container .dep-card').forEach(card => {
-    if (card.querySelector('.dep-uuid')) {
-      deps.push({ uuid: card.querySelector('.dep-uuid').value, version: parseVersion(card.querySelector('.dep-version').value) });
-    } else if (card.querySelector('.dep-module')) {
-      deps.push({ module_name: card.querySelector('.dep-module').value, version: card.querySelector('.dep-mod-version').value });
-    }
+  if(mods.length)m.modules=mods;
+  const deps=[];
+  document.querySelectorAll('#deps .sc').forEach(c=>{
+    if(c.querySelector('.dep-uuid'))deps.push({uuid:c.querySelector('.dep-uuid').value,version:pv(c.querySelector('.dep-ver').value)});
+    else if(c.querySelector('.dep-mod'))deps.push({module_name:c.querySelector('.dep-mod').value,version:c.querySelector('.dep-mod-ver').value});
   });
-  if (deps.length > 0) manifest.dependencies = deps;
-
-  const caps = Array.from(document.querySelectorAll('#cap-body input[type=checkbox]:checked')).map(c => c.value);
-  if (caps.length > 0) manifest.capabilities = caps;
-
-  const subpacks = [];
-  document.querySelectorAll('#subpacks-container .dep-card').forEach(card => {
-    subpacks.push({
-      folder_name: card.querySelector('.sub-folder').value || 'subpack',
-      name: card.querySelector('.sub-name').value || 'Subpack',
-      memory_tier: parseInt(card.querySelector('.sub-tier').value) || 1
-    });
+  if(deps.length)m.dependencies=deps;
+  const caps=Array.from(document.querySelectorAll('#cap-body input:checked')).map(c=>c.value);
+  if(caps.length)m.capabilities=caps;
+  const subs=[];
+  document.querySelectorAll('#subs .sc').forEach(c=>{
+    subs.push({folder_name:c.querySelector('.sub-folder').value||'subpack',name:c.querySelector('.sub-name').value||'Subpack',memory_tier:parseInt(c.querySelector('.sub-tier').value)||1});
   });
-  if (subpacks.length > 0) manifest.subpacks = subpacks;
-
-  const author = document.getElementById('meta_author').value;
-  const license = document.getElementById('meta_license').value;
-  const url = document.getElementById('meta_url').value;
-  const product = document.getElementById('meta_product').value;
-
-  if (author || license || url || product) {
-    manifest.metadata = {};
-    if (author) manifest.metadata.authors = [author];
-    if (license) manifest.metadata.license = license;
-    if (url) manifest.metadata.url = url;
-    if (product) manifest.metadata.product_type = product;
-    manifest.metadata.generated_with = { 'manifest-generator': ['1.0.0'] };
-  }
-
-  return manifest;
+  if(subs.length)m.subpacks=subs;
+  const au=document.getElementById('meta_author').value,li=document.getElementById('meta_license').value,ur=document.getElementById('meta_url').value,pr=document.getElementById('meta_product').value;
+  if(au||li||ur||pr){m.metadata={};if(au)m.metadata.authors=[au];if(li)m.metadata.license=li;if(ur)m.metadata.url=ur;if(pr)m.metadata.product_type=pr;m.metadata.generated_with={'manifest-generator':['1.0.0']};}
+  return m;
 }
 
-function syntaxHighlight(json) {
-  json = json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
-    let cls = 'json-num';
-    if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-str'; }
-    else if (/true|false/.test(match)) cls = 'json-bool';
-    else if (/null/.test(match)) cls = 'json-null';
-    return `<span class="${cls}">${match}</span>`;
+function hl(json){
+  json=json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{
+    let c='jn';if(/^"/.test(m)){c=/:$/.test(m)?'jk':'js';}else if(/true|false/.test(m))c='jb';else if(/null/.test(m))c='jnull';
+    return`<span class="${c}">${m}</span>`;
   });
 }
 
-function updatePreview() {
-  try {
-    const manifest = buildManifest();
-    const json = JSON.stringify(manifest, null, 2);
-    document.getElementById('live-preview').innerHTML = syntaxHighlight(json);
-    document.getElementById('validity-badge').textContent = 'valid json';
-    document.getElementById('validity-badge').style.background = '#43b58120';
-    document.getElementById('validity-badge').style.color = '#43b581';
-    document.getElementById('validity-badge').style.borderColor = '#43b58140';
-  } catch(e) {
-    document.getElementById('validity-badge').textContent = 'error';
-    document.getElementById('validity-badge').style.background = '#ed424520';
-    document.getElementById('validity-badge').style.color = '#ed4245';
-    document.getElementById('validity-badge').style.borderColor = '#ed424540';
+function up(){
+  try{
+    const json=JSON.stringify(build(),null,2);
+    document.getElementById('lp').innerHTML=hl(json);
+    const chip=document.getElementById('vchip');chip.className='chip chip-ok';chip.innerHTML='<span class="mi" style="font-size:11px">check_circle</span>valid';
+  }catch(e){
+    const chip=document.getElementById('vchip');chip.className='chip chip-err';chip.innerHTML='<span class="mi" style="font-size:11px">error</span>error';
   }
 }
 
-function downloadManifest() {
-  const manifest = buildManifest();
-  const json = JSON.stringify(manifest, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'manifest.json';
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast('manifest.json downloaded!');
+function downloadManifest(){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(build(),null,2)],{type:'application/json'}));
+  a.download='manifest.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast('manifest.json downloaded');
+}
+function copyJSON(){navigator.clipboard.writeText(JSON.stringify(build(),null,2));toast('Copied to clipboard');}
+function cpUUID(id){navigator.clipboard.writeText(document.getElementById(id).textContent);toast('UUID copied');}
+function genUUIDs(){document.getElementById('uh').textContent=guuid();document.getElementById('um').textContent=guuid();}
+
+function resetForm(){
+  ['pack_name','pack_desc','pack_version','min_engine','meta_author','meta_license','meta_url'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('meta_product').value='';
+  document.querySelectorAll('#cap-body input').forEach(c=>c.checked=false);
+  document.getElementById('mods').innerHTML='';document.getElementById('deps').innerHTML='';document.getElementById('subs').innerHTML='';
+  mc=0;dc=0;sc=0;
+  document.getElementById('deps-empty').style.display='';document.getElementById('subs-empty').style.display='';
+  addMod();up();toast('Form reset');
 }
 
-function copyJSON() {
-  const manifest = buildManifest();
-  navigator.clipboard.writeText(JSON.stringify(manifest, null, 2));
-  showToast('Copied to clipboard!');
+function toast(msg){
+  const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-function copyUUID(id) {
-  const text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text);
-  showToast('UUID copied!');
+function guuid(){
+  let d=new Date().getTime();if(typeof performance!=='undefined'&&performance.now)d+=performance.now();
+  return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return(c==='x'?r:(r&0x3|0x8)).toString(16);});
 }
 
-function genUUIDs() {
-  document.getElementById('uuid-header').textContent = generateUUID();
-  document.getElementById('uuid-module').textContent = generateUUID();
-}
-
-function resetForm() {
-  document.getElementById('pack_name').value = '';
-  document.getElementById('pack_desc').value = '';
-  document.getElementById('pack_version').value = '';
-  document.getElementById('min_engine').value = '';
-  document.getElementById('meta_author').value = '';
-  document.getElementById('meta_license').value = '';
-  document.getElementById('meta_url').value = '';
-  document.getElementById('meta_product').value = '';
-  document.querySelectorAll('#cap-body input[type=checkbox]').forEach(c => c.checked = false);
-  document.getElementById('modules-container').innerHTML = '';
-  document.getElementById('deps-container').innerHTML = '';
-  document.getElementById('subpacks-container').innerHTML = '';
-  moduleCount = 0; depCount = 0; subpackCount = 0;
-  document.getElementById('deps-hint').style.display = '';
-  addModule();
-  updatePreview();
-  showToast('Form reset');
-}
-
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2200);
-}
-
-function generateUUID() {
-  let d = new Date().getTime();
-  if (typeof performance !== 'undefined' && typeof performance.now === 'function') d += performance.now();
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = (d + Math.random() * 16) % 16 | 0; d = Math.floor(d / 16);
-    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  addModule();
-  genUUIDs();
-  updatePreview();
-});
+document.addEventListener('DOMContentLoaded',()=>{addMod();genUUIDs();up();});
 </script>
 </body>
 </html>
