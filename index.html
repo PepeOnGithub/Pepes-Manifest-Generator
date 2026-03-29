@@ -1,469 +1,730 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>MCBE Manifest Generator</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&family=Google+Sans+Mono&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round">
-<style>
-:root {
-  --md-primary:#BBC4FF;--md-on-primary:#222B7A;--md-primary-container:#3A4492;--md-on-primary-cont:#DDE1FF;
-  --md-secondary:#C4C6DD;--md-on-secondary:#2C2F42;--md-secondary-cont:#434659;--md-on-secondary-cont:#E0E1F8;
-  --md-tertiary:#E8B9D5;--md-on-tertiary:#47253B;--md-tertiary-cont:#603B52;--md-on-tertiary-cont:#FFD8EE;
-  --md-error:#FFB4AB;--md-error-cont:#93000A;--md-on-error:#690005;
-  --md-bg:#121318;--md-on-bg:#E4E1E9;--md-surface:#121318;--md-on-surface:#E4E1E9;
-  --md-surface-variant:#44464F;--md-on-surface-variant:#C5C6D0;
-  --md-outline:#8E9099;--md-outline-variant:#44464F;
-  --md-surf-lowest:#0D0E13;--md-surf-low:#1A1B21;--md-surf:#1E1F25;--md-surf-high:#292A30;--md-surf-highest:#33343A;
-  --md-inverse-surface:#E4E1E9;--md-inverse-on-surface:#313036;--md-inverse-primary:#4B5BB5;
-  --md-state-hover:rgba(187,196,255,0.08);--md-state-press:rgba(187,196,255,0.16);
-  --shape-sm:8px;--shape-md:12px;--shape-lg:16px;--shape-xl:28px;--shape-full:9999px;
-}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-html{scroll-behavior:smooth;}
-body{font-family:'Google Sans',sans-serif;font-size:.875rem;line-height:1.43;background:var(--md-bg);color:var(--md-on-surface);min-height:100dvh;overflow-x:hidden;}
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--md-outline-variant);border-radius:99px;}
-::-webkit-scrollbar-thumb:hover{background:var(--md-outline);}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bedrock Manifest Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            900: '#312e81',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.4s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .json-key { color: #db2777; }
+        .json-string { color: #059669; }
+        .json-number { color: #d97706; }
+        .json-boolean { color: #2563eb; }
+        .json-null { color: #6b7280; }
+        
+        .dark .json-key { color: #f472b6; }
+        .dark .json-string { color: #34d399; }
+        .dark .json-number { color: #fbbf24; }
+        .dark .json-boolean { color: #60a5fa; }
+        .dark .json-null { color: #9ca3af; }
 
-/* TOP APP BAR */
-.top-bar{position:sticky;top:0;z-index:50;background:var(--md-surf-low);border-bottom:1px solid var(--md-outline-variant);display:flex;align-items:center;padding:0 16px;height:64px;gap:4px;}
-.tb-leading{display:flex;align-items:center;gap:12px;flex:1;}
-.app-icon{width:40px;height:40px;border-radius:var(--shape-md);background:var(--md-primary-container);display:grid;place-items:center;color:var(--md-on-primary-cont);flex-shrink:0;}
-.app-icon .mi{font-size:20px;}
-.app-title{font-size:1.125rem;font-weight:700;color:var(--md-on-surface);}
-.app-sub{font-size:.75rem;color:var(--md-on-surface-variant);}
-.tb-trailing{display:flex;align-items:center;gap:4px;}
-.ver-badge{font-size:.69rem;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:var(--shape-full);background:var(--md-primary-container);color:var(--md-on-primary-cont);}
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] { -moz-appearance: textfield; }
 
-/* ICON BUTTON */
-.ib{width:40px;height:40px;border-radius:var(--shape-full);background:transparent;border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-on-surface-variant);position:relative;overflow:hidden;transition:color .2s;}
-.ib::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--md-state-hover);opacity:0;transition:opacity .2s;}
-.ib:hover::before{opacity:1;}.ib:active::before{background:var(--md-state-press);opacity:1;}
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
 
-/* NAV TABS */
-.nav-area{background:var(--md-surf-low);border-bottom:1px solid var(--md-outline-variant);padding:0 12px;overflow-x:auto;white-space:nowrap;scrollbar-width:none;}
-.nav-area::-webkit-scrollbar{display:none;}
-.seg-tabs{display:inline-flex;}
-.seg-tab{position:relative;overflow:hidden;padding:14px 18px 12px;font-size:.8125rem;font-weight:700;color:var(--md-on-surface-variant);background:transparent;border:none;cursor:pointer;border-bottom:3px solid transparent;transition:color .2s,border-color .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-family:'Google Sans',sans-serif;}
-.seg-tab .mi{font-size:18px;}.seg-tab::before{content:'';position:absolute;inset:0;background:var(--md-state-hover);opacity:0;transition:opacity .2s;}
-.seg-tab:hover::before{opacity:1;}.seg-tab:hover{color:var(--md-on-surface);}
-.seg-tab.active{color:var(--md-primary);border-bottom-color:var(--md-primary);}
-.seg-tab.active::before{opacity:0;}
-
-/* LAYOUT */
-.layout{display:grid;grid-template-columns:1fr 420px;gap:16px;padding:16px;max-width:1320px;margin:0 auto;}
-@media(max-width:900px){.layout{grid-template-columns:1fr;}}
-
-/* CARDS */
-.card{background:var(--md-surf);border-radius:var(--shape-xl);padding:24px;position:relative;overflow:hidden;}
-.card+.card{margin-top:12px;}
-.card-head{font-size:1rem;font-weight:700;color:var(--md-on-surface);display:flex;align-items:center;gap:10px;margin-bottom:20px;}
-.lead-icon{width:32px;height:32px;border-radius:var(--shape-sm);background:var(--md-secondary-cont);display:grid;place-items:center;color:var(--md-on-secondary-cont);font-size:16px;flex-shrink:0;}
-
-/* FIELDS */
-.fg{margin-bottom:14px;}.fg:last-child{margin-bottom:0;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:540px){.frow{grid-template-columns:1fr;}}
-.fl{font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:5px;margin-bottom:5px;}
-.fl .mi{font-size:13px;color:var(--md-primary);}
-.inp,.sel{width:100%;padding:13px 15px;background:var(--md-surf-high);border:1px solid var(--md-outline-variant);border-radius:var(--shape-md);color:var(--md-on-surface);font-family:'Google Sans',sans-serif;font-size:.875rem;transition:border-color .2s,box-shadow .2s,background .2s;outline:none;caret-color:var(--md-primary);}
-.inp::placeholder{color:var(--md-on-surface-variant);opacity:.5;}
-.inp:hover,.sel:hover{border-color:var(--md-on-surface-variant);background:var(--md-surf-highest);}
-.inp:focus,.sel:focus{border-color:var(--md-primary);border-width:2px;box-shadow:0 0 0 2px color-mix(in srgb,var(--md-primary) 14%,transparent);background:var(--md-surf-high);}
-.sel{cursor:pointer;}.sel option{background:var(--md-surf-high);}
-.mono{font-family:'Google Sans Mono',monospace;font-size:.77rem;}
-.inp[type=number]{-moz-appearance:textfield;}.inp[type=number]::-webkit-inner-spin-button,.inp[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
-
-/* BUTTONS */
-.btn-f{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:var(--md-primary);color:var(--md-on-primary);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:box-shadow .2s,transform .1s;}
-.btn-f::before{content:'';position:absolute;inset:0;background:var(--md-on-primary);opacity:0;transition:opacity .2s;}
-.btn-f:hover{box-shadow:0 1px 3px #0006,0 4px 8px #0003;}.btn-f:hover::before{opacity:.08;}
-.btn-f:active{transform:scale(.98);box-shadow:none;}.btn-f:active::before{opacity:.12;}
-.btn-f .mi{font-size:18px;}
-
-.btn-t{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:var(--md-secondary-cont);color:var(--md-on-secondary-cont);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:box-shadow .2s,transform .1s;}
-.btn-t::before{content:'';position:absolute;inset:0;background:var(--md-on-secondary-cont);opacity:0;transition:opacity .2s;}
-.btn-t:hover{box-shadow:0 1px 3px #0006;}.btn-t:hover::before{opacity:.08;}
-.btn-t:active{transform:scale(.98);}.btn-t:active::before{opacity:.12;}
-.btn-t .mi{font-size:18px;}
-
-.btn-o{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:var(--shape-full);background:transparent;color:var(--md-primary);border:1px solid var(--md-outline);font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;cursor:pointer;position:relative;overflow:hidden;transition:border-color .2s,transform .1s;}
-.btn-o::before{content:'';position:absolute;inset:0;background:var(--md-primary);opacity:0;transition:opacity .2s;}
-.btn-o:hover{border-color:var(--md-primary);}.btn-o:hover::before{opacity:.08;}
-.btn-o:active{transform:scale(.98);}.btn-o:active::before{opacity:.12;}
-.btn-o .mi{font-size:18px;}
-
-.btn-sm{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:var(--shape-full);background:var(--md-secondary-cont);color:var(--md-on-secondary-cont);font-family:'Google Sans',sans-serif;font-size:.69rem;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s;}
-.btn-sm::before{content:'';position:absolute;inset:0;background:var(--md-on-secondary-cont);opacity:0;transition:opacity .2s;}
-.btn-sm:hover::before{opacity:.08;}.btn-sm .mi{font-size:14px;}
-
-.btn-icon{width:32px;height:32px;border-radius:var(--shape-full);background:var(--md-surf-highest);border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-on-surface-variant);font-size:16px;flex-shrink:0;position:relative;overflow:hidden;transition:background .2s;}
-.btn-icon::before{content:'';position:absolute;inset:0;background:var(--md-on-surface);opacity:0;transition:opacity .2s;}
-.btn-icon:hover::before{opacity:.08;}
-
-.btn-del{width:32px;height:32px;border-radius:var(--shape-full);background:var(--md-error-cont);border:none;cursor:pointer;display:grid;place-items:center;color:var(--md-error);font-size:16px;flex-shrink:0;transition:filter .2s;}
-.btn-del:hover{filter:brightness(1.2);}
-
-/* CHIPS */
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--shape-full);background:var(--md-surf-highest);border:1px solid var(--md-outline-variant);color:var(--md-on-surface-variant);font-size:.69rem;font-weight:700;}
-.chip-p{background:color-mix(in srgb,var(--md-primary) 15%,transparent);border-color:color-mix(in srgb,var(--md-primary) 30%,transparent);color:var(--md-primary);}
-.chip-ok{background:color-mix(in srgb,#69c96e 15%,transparent);border-color:color-mix(in srgb,#69c96e 30%,transparent);color:#69c96e;}
-.chip-err{background:color-mix(in srgb,var(--md-error) 15%,transparent);border-color:color-mix(in srgb,var(--md-error) 30%,transparent);color:var(--md-error);}
-
-/* SUB CARDS */
-.sc{background:var(--md-surf-low);border-radius:var(--shape-lg);padding:16px;border:1px solid var(--md-outline-variant);animation:cardIn .22s cubic-bezier(.34,1.4,.64,1);}
-@keyframes cardIn{from{opacity:0;transform:translateY(6px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
-.sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.sc-label{font-size:.69rem;font-weight:700;color:var(--md-primary);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
-.sc-label .mi{font-size:13px;}
-.sc+.sc{margin-top:10px;}
-
-/* DIVIDER */
-.div{height:1px;background:var(--md-outline-variant);margin:16px 0;}
-
-/* COLLAPSE */
-.coll-btn{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;color:inherit;text-align:left;padding:0;}
-.coll-btn .chev{font-size:18px;color:var(--md-on-surface-variant);transition:transform .25s cubic-bezier(.4,0,.2,1);}
-.coll-btn.open .chev{transform:rotate(180deg);}
-.coll-body{overflow:hidden;transition:max-height .3s cubic-bezier(.4,0,.2,1),opacity .25s;max-height:0;opacity:0;}
-.coll-body.open{max-height:700px;opacity:1;}
-
-/* CAPS */
-.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-@media(max-width:480px){.cap-grid{grid-template-columns:1fr;}}
-.cap-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--shape-md);background:var(--md-surf-high);cursor:pointer;transition:background .2s;user-select:none;}
-.cap-row:hover{background:var(--md-surf-highest);}
-.cap-row input[type=checkbox]{display:none;}
-.cap-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--md-outline);display:grid;place-items:center;flex-shrink:0;transition:border-color .2s,background .2s;color:transparent;font-size:12px;}
-.cap-row input:checked~.cap-box{background:var(--md-primary);border-color:var(--md-primary);color:var(--md-on-primary);}
-.cap-name{font-size:.8125rem;color:var(--md-on-surface);}
-
-/* PREVIEW */
-.prev-pane{position:sticky;top:93px;background:var(--md-surf);border-radius:var(--shape-xl);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100dvh - 110px);}
-.prev-head{padding:20px 24px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--md-outline-variant);flex-shrink:0;}
-pre#lp{font-family:'Google Sans Mono',monospace;font-size:.77rem;line-height:1.8;padding:20px 24px;overflow:auto;flex:1;background:var(--md-surf-lowest);color:var(--md-on-surface);margin:0;}
-.jk{color:var(--md-primary);}.js{color:#9ddf80;}.jn{color:#f4c668;}.jb{color:var(--md-tertiary);}.jnull{color:var(--md-on-surface-variant);}
-
-/* UUID PANEL */
-.uuid-panel{padding:16px 24px;border-top:1px solid var(--md-outline-variant);background:var(--md-surf);flex-shrink:0;}
-.uuid-row{display:flex;align-items:center;gap:10px;padding:5px 0;}
-.uuid-tag{font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);width:52px;flex-shrink:0;letter-spacing:.04em;text-transform:uppercase;}
-.uuid-val{font-family:'Google Sans Mono',monospace;font-size:.72rem;line-height:1;color:#9ddf80;flex:1;word-break:break-all;}
-
-/* ACTIONS */
-.actions{display:flex;gap:10px;flex-wrap:wrap;padding:16px 0 4px;}
-
-/* EMPTY */
-.empty{text-align:center;padding:20px 10px;color:var(--md-on-surface-variant);font-size:.8125rem;border:1px dashed var(--md-outline-variant);border-radius:var(--shape-lg);}
-.empty .mi{font-size:28px;display:block;margin-bottom:6px;color:var(--md-outline);}
-
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--md-inverse-surface);color:var(--md-inverse-on-surface);padding:12px 20px;border-radius:var(--shape-md);font-size:.875rem;display:flex;align-items:center;gap:10px;z-index:999;pointer-events:none;opacity:0;transition:transform .3s cubic-bezier(.34,1.3,.64,1),opacity .25s;white-space:nowrap;box-shadow:0 4px 16px #0008;}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-.toast .mi{color:var(--md-inverse-primary);font-size:18px;}
-
-/* FAB */
-.fab{display:none;}
-@media(max-width:600px){
-  .fab{display:flex;align-items:center;gap:12px;position:fixed;bottom:20px;right:16px;z-index:40;background:var(--md-primary-container);color:var(--md-on-primary-cont);border:none;border-radius:var(--shape-lg);padding:14px 20px;font-family:'Google Sans',sans-serif;font-size:.8125rem;font-weight:700;box-shadow:0 3px 8px #0006,0 8px 24px #0004;cursor:pointer;}
-  .fab .mi{font-size:22px;}
-  .prev-pane{position:relative;top:0;max-height:none;}
-  pre#lp{max-height:320px;}
-  .layout{grid-template-columns:1fr;padding:8px;gap:8px;}
-  .card{border-radius:var(--shape-lg);}
-  .actions{flex-direction:column;}
-  .actions .btn-f,.actions .btn-t,.actions .btn-o{justify-content:center;}
-}
-
-/* ANIMATE IN */
-.layout>*{animation:fadeUp .35s cubic-bezier(.4,0,.2,1) both;}
-.layout>*:nth-child(2){animation-delay:.08s;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-
-.mi{font-family:'Material Icons Round';font-weight:normal;font-style:normal;letter-spacing:normal;text-transform:none;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-smoothing:antialiased;display:inline-block;line-height:1;vertical-align:middle;user-select:none;}
-</style>
+        .toast {
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 min-h-screen flex flex-col">
 
-<header class="top-bar">
-  <div class="tb-leading">
-    <div class="app-icon"><span class="mi">extension</span></div>
-    <div><div class="app-title">Manifest Generator</div><div class="app-sub">Minecraft Bedrock Edition</div></div>
-  </div>
-  <div class="tb-trailing">
-    <span class="ver-badge">format v2/v3</span>
-    <button class="ib" onclick="copyJSON()" title="Copy JSON"><span class="mi">content_copy</span></button>
-    <button class="ib" onclick="downloadManifest()" title="Download"><span class="mi">download</span></button>
-  </div>
-</header>
-
-<nav class="nav-area">
-  <div class="seg-tabs">
-    <button class="seg-tab active" data-tab="behavior" onclick="switchTab('behavior')"><span class="mi">settings_suggest</span>Behavior Pack</button>
-    <button class="seg-tab" data-tab="resource" onclick="switchTab('resource')"><span class="mi">palette</span>Resource Pack</button>
-    <button class="seg-tab" data-tab="skinpack" onclick="switchTab('skinpack')"><span class="mi">checkroom</span>Skin Pack</button>
-    <button class="seg-tab" data-tab="world" onclick="switchTab('world')"><span class="mi">public</span>World Template</button>
-  </div>
-</nav>
-
-<div class="layout">
-  <!-- FORM -->
-  <div>
-
-    <div class="card">
-      <div class="card-head"><div class="lead-icon"><span class="mi">info</span></div>Pack Information</div>
-      <div class="frow">
-        <div class="fg"><label class="fl"><span class="mi">sell</span>Pack Name</label><input type="text" id="pack_name" class="inp" placeholder="My Awesome Pack" oninput="up()"></div>
-        <div class="fg"><label class="fl"><span class="mi">alt_route</span>Format Version</label><select id="format_version" class="sel" onchange="up()"><option value="2" selected>2 · Stable</option><option value="3">3 · Preview</option></select></div>
-      </div>
-      <div class="fg"><label class="fl"><span class="mi">notes</span>Description</label><input type="text" id="pack_desc" class="inp" placeholder="What does your pack do?" oninput="up()"></div>
-      <div class="frow">
-        <div class="fg"><label class="fl"><span class="mi">new_releases</span>Version</label><input type="text" id="pack_version" class="inp" placeholder="1.0.0" oninput="up()"></div>
-        <div class="fg"><label class="fl"><span class="mi">layers</span>Min Engine Version</label><input type="text" id="min_engine" class="inp" list="eng-list" placeholder="1.21.0" oninput="up()"><datalist id="eng-list"><option value="1.21.0"></option><option value="1.20.80"></option><option value="1.20.0"></option><option value="1.19.0"></option><option value="1.18.0"></option></datalist></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <button class="coll-btn" id="meta-btn" onclick="ct('meta-btn','meta-body')">
-        <div class="card-head" style="margin-bottom:0"><div class="lead-icon"><span class="mi">badge</span></div>Metadata<span class="chip chip-p" style="margin-left:6px;">optional</span></div>
-        <span class="mi chev">expand_more</span>
-      </button>
-      <div class="coll-body" id="meta-body">
-        <div class="div"></div>
-        <div class="frow">
-          <div class="fg"><label class="fl"><span class="mi">person</span>Author</label><input type="text" id="meta_author" class="inp" placeholder="Your name" oninput="up()"></div>
-          <div class="fg"><label class="fl"><span class="mi">gavel</span>License</label><input type="text" id="meta_license" class="inp" placeholder="MIT" oninput="up()"></div>
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-500 text-white p-2 rounded-lg shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-cube text-xl"></i>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">Manifest<span class="text-brand-500 dark:text-brand-400">Gen</span></h1>
+            </div>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <div class="relative group">
+                    <button id="btnPresets" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="hidden sm:inline">Presets</span>
+                    </button>
+                    <div id="presetsDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden hidden transform origin-top-right transition-all scale-95 opacity-0 z-50">
+                        <button class="preset-option w-full text-left px-4 py-3 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors" data-preset="resource">Resource Pack</button>
+                        <button class="preset-option w-full text-left px-4 py-3 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors" data-preset="behavior">Behavior Pack</button>
+                        <button class="preset-option w-full text-left px-4 py-3 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors" data-preset="skin">Skin Pack</button>
+                    </div>
+                </div>
+                <button id="btnReset" class="px-3 py-2 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors tooltip relative flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span class="tooltip-text absolute -bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">Reset All</span>
+                </button>
+                <button id="btnTheme" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-10 h-10 flex items-center justify-center">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+            </div>
         </div>
-        <div class="fg"><label class="fl"><span class="mi">language</span>URL</label><input type="text" id="meta_url" class="inp" placeholder="https://example.com" oninput="up()"></div>
-        <div class="fg"><label class="fl"><span class="mi">inventory_2</span>Product Type</label><select id="meta_product" class="sel" onchange="up()"><option value="">None</option><option value="addon">addon</option></select></div>
-      </div>
-    </div>
+    </nav>
 
-    <div class="card">
-      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">extension</span></div>Modules<button class="btn-sm" style="margin-left:auto" onclick="addMod()"><span class="mi">add</span>Add Module</button></div>
-      <div id="mods" style="display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-7 flex flex-col gap-6" data-aos="fade-right">
+            
+            <div class="flex space-x-1 bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-xl">
+                <button class="tab-btn active w-full py-2.5 text-sm font-medium rounded-lg transition-all bg-white dark:bg-slate-900 shadow text-brand-600 dark:text-brand-400" data-target="tab-header">Header</button>
+                <button class="tab-btn w-full py-2.5 text-sm font-medium rounded-lg transition-all hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400" data-target="tab-modules">Modules</button>
+                <button class="tab-btn w-full py-2.5 text-sm font-medium rounded-lg transition-all hover:bg-white/50 dark:hover:bg-slate-800/50 text-slate-600 dark:text-slate-400" data-target="tab-dependencies">Dependencies</button>
+            </div>
 
-    <div class="card">
-      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">link</span></div>Dependencies
-        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn-sm" onclick="addDep('uuid')"><span class="mi">fingerprint</span>Pack</button>
-          <button class="btn-sm" onclick="addDep('module')"><span class="mi">code</span>Script</button>
+            <div id="tab-header" class="tab-content block bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 animate-fade-in">
+                <div class="space-y-5">
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
+                            Name
+                            <div class="tooltip relative text-slate-400 cursor-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span class="tooltip-text absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-800 text-white text-xs px-2 py-1 rounded w-48 text-center z-10">The display name of the pack.</span>
+                            </div>
+                        </label>
+                        <input type="text" id="h-name" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all" placeholder="My Awesome Pack">
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
+                            Description
+                        </label>
+                        <textarea id="h-desc" rows="3" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none" placeholder="A brief description of what this pack does."></textarea>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
+                            UUID
+                            <div class="tooltip relative text-slate-400 cursor-help">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span class="tooltip-text absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-800 text-white text-xs px-2 py-1 rounded w-48 text-center z-10">Unique identifier for the pack. Must be different for every pack.</span>
+                            </div>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="h-uuid" class="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none transition-all" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                            <button onclick="genUUID('h-uuid')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 rounded-xl transition-colors tooltip relative">
+                                <i class="fa-solid fa-rotate"></i>
+                                <span class="tooltip-text absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">Generate New</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Version</label>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="h-v1" value="1" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                <span class="text-slate-400 font-bold">.</span>
+                                <input type="number" id="h-v2" value="0" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                <span class="text-slate-400 font-bold">.</span>
+                                <input type="number" id="h-v3" value="0" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Min Engine Version</label>
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="e-v1" value="1" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                <span class="text-slate-400 font-bold">.</span>
+                                <input type="number" id="e-v2" value="16" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                                <span class="text-slate-400 font-bold">.</span>
+                                <input type="number" id="e-v3" value="0" min="0" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-center focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-modules" class="tab-content hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-white">Modules</h2>
+                    <button onclick="addModule()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all transform hover:scale-105 active:scale-95 shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Module
+                    </button>
+                </div>
+                <div id="modules-container" class="space-y-4"></div>
+                <div id="modules-empty" class="text-center py-10 bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl hidden">
+                    <i class="fa-solid fa-boxes-stacked text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">No modules added yet.</p>
+                </div>
+            </div>
+
+            <div id="tab-dependencies" class="tab-content hidden animate-fade-in">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-800 dark:text-white">Dependencies</h2>
+                    <button onclick="addDependency()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all transform hover:scale-105 active:scale-95 shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Add Dependency
+                    </button>
+                </div>
+                <div id="dependencies-container" class="space-y-4"></div>
+                <div id="dependencies-empty" class="text-center py-10 bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl hidden">
+                    <i class="fa-solid fa-link text-4xl text-slate-300 dark:text-slate-600 mb-3"></i>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">No dependencies added yet.</p>
+                </div>
+            </div>
+
         </div>
-      </div>
-      <div id="deps" style="display:flex;flex-direction:column;gap:10px;"></div>
-      <div class="empty" id="deps-empty"><span class="mi">link_off</span>No dependencies — add a pack UUID or script module</div>
-    </div>
 
-    <div class="card" id="cap-card">
-      <button class="coll-btn" id="cap-btn" onclick="ct('cap-btn','cap-body')">
-        <div class="card-head" style="margin-bottom:0"><div class="lead-icon"><span class="mi">bolt</span></div>Capabilities<span class="chip chip-p" style="margin-left:6px;">optional</span></div>
-        <span class="mi chev">expand_more</span>
-      </button>
-      <div class="coll-body" id="cap-body">
-        <div class="div"></div>
-        <div class="cap-grid">
-          <label class="cap-row"><input type="checkbox" value="chemistry" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">chemistry</span></label>
-          <label class="cap-row"><input type="checkbox" value="editorExtension" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">editorExtension</span></label>
-          <label class="cap-row"><input type="checkbox" value="experimental_custom_ui" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">experimental_custom_ui</span></label>
-          <label class="cap-row"><input type="checkbox" value="script_eval" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">script_eval</span></label>
-          <label class="cap-row"><input type="checkbox" value="raytraced" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">raytraced</span></label>
-          <label class="cap-row"><input type="checkbox" value="pbr" onchange="up()"><div class="cap-box"><span class="mi" style="font-size:12px">check</span></div><span class="cap-name">pbr</span></label>
+        <div class="lg:col-span-5 relative" data-aos="fade-left">
+            <div class="sticky top-24 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[calc(100vh-8rem)]">
+                <div class="bg-slate-100 dark:bg-slate-800 px-4 py-3 flex justify-between items-center border-b border-slate-200 dark:border-slate-700">
+                    <div class="flex items-center gap-2 text-sm font-mono text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-file-code text-brand-500"></i> manifest.json
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copyJson()" class="p-1.5 rounded bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-brand-400 shadow-sm transition-colors tooltip relative">
+                            <i class="fa-regular fa-copy"></i>
+                            <span class="tooltip-text absolute -bottom-8 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">Copy</span>
+                        </button>
+                        <button onclick="downloadJson()" class="p-1.5 rounded bg-brand-500 hover:bg-brand-600 text-white shadow-sm transition-colors tooltip relative">
+                            <i class="fa-solid fa-download"></i>
+                            <span class="tooltip-text absolute -bottom-8 right-0 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">Download</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-auto p-4 bg-slate-50 dark:bg-slate-950">
+                    <pre><code id="json-preview" class="text-sm font-mono whitespace-pre block"></code></pre>
+                </div>
+            </div>
         </div>
-      </div>
+
+    </main>
+
+    <div id="toast" class="toast fixed bottom-4 right-4 bg-slate-800 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-green-400"></i>
+        <span id="toast-msg" class="text-sm font-medium">Action successful</span>
     </div>
 
-    <div class="card" id="sub-card">
-      <div class="card-head" style="margin-bottom:16px"><div class="lead-icon"><span class="mi">folder_open</span></div>Subpacks<span class="chip chip-p" style="margin-left:6px;">optional</span><button class="btn-sm" style="margin-left:auto" onclick="addSub()"><span class="mi">add</span>Add</button></div>
-      <div id="subs" style="display:flex;flex-direction:column;gap:10px;"></div>
-      <div class="empty" id="subs-empty"><span class="mi">folder_off</span>No subpacks — useful for texture resolution tiers</div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-f" onclick="downloadManifest()" style="flex:1;justify-content:center"><span class="mi">download</span>Download manifest.json</button>
-      <button class="btn-t" onclick="copyJSON()"><span class="mi">content_copy</span>Copy</button>
-      <button class="btn-o" onclick="resetForm()"><span class="mi">restart_alt</span>Reset</button>
-    </div>
-  </div>
-
-  <!-- PREVIEW -->
-  <div>
-    <div class="prev-pane">
-      <div class="prev-head">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="lead-icon" style="background:var(--md-primary-container);color:var(--md-on-primary-cont)"><span class="mi">data_object</span></div>
-          <span style="font-size:1rem;font-weight:700;color:var(--md-on-surface)">Live Preview</span>
+    <template id="tpl-module">
+        <div class="module-item bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm relative group animate-slide-up">
+            <button onclick="removeModule(this)" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 pr-10">
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-500 dark:text-slate-400 uppercase tracking-wider">Type</label>
+                    <div class="relative">
+                        <select class="mod-type w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm appearance-none focus:ring-2 focus:ring-brand-500 outline-none">
+                            <option value="resources">resources</option>
+                            <option value="data">data</option>
+                            <option value="client_data">client_data</option>
+                            <option value="interface">interface</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1 text-slate-500 dark:text-slate-400 uppercase tracking-wider">Version</label>
+                    <div class="flex items-center gap-1">
+                        <input type="number" class="mod-v1 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="1" min="0">
+                        <span class="text-slate-400 font-bold">.</span>
+                        <input type="number" class="mod-v2 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="0" min="0">
+                        <span class="text-slate-400 font-bold">.</span>
+                        <input type="number" class="mod-v3 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="0" min="0">
+                    </div>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-500 dark:text-slate-400 uppercase tracking-wider">UUID</label>
+                <div class="flex gap-2">
+                    <input type="text" class="mod-uuid flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" readonly>
+                    <button onclick="regenModuleUUID(this)" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 rounded-lg transition-colors">
+                        <i class="fa-solid fa-rotate text-sm"></i>
+                    </button>
+                </div>
+            </div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span id="vchip" class="chip chip-ok"><span class="mi" style="font-size:11px">check_circle</span>valid</span>
-          <button class="ib" onclick="copyJSON()" title="Copy"><span class="mi" style="font-size:18px">content_copy</span></button>
+    </template>
+
+    <template id="tpl-dependency">
+        <div class="dep-item bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm relative group animate-slide-up">
+            <button onclick="removeDependency(this)" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 p-2 rounded-lg">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <div class="mb-4 pr-10">
+                <label class="block text-xs font-semibold mb-1 text-slate-500 dark:text-slate-400 uppercase tracking-wider">Target UUID</label>
+                <input type="text" class="dep-uuid w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Target pack UUID">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-500 dark:text-slate-400 uppercase tracking-wider">Version</label>
+                <div class="flex items-center gap-1 w-full sm:w-1/2">
+                    <input type="number" class="dep-v1 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="1" min="0">
+                    <span class="text-slate-400 font-bold">.</span>
+                    <input type="number" class="dep-v2 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="0" min="0">
+                    <span class="text-slate-400 font-bold">.</span>
+                    <input type="number" class="dep-v3 w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-2 text-center text-sm focus:ring-2 focus:ring-brand-500 outline-none" value="0" min="0">
+                </div>
+            </div>
         </div>
-      </div>
-      <pre id="lp"></pre>
-      <div class="uuid-panel">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <span style="font-size:.69rem;font-weight:700;color:var(--md-on-surface-variant);display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;"><span class="mi" style="font-size:13px;color:var(--md-primary)">fingerprint</span>UUID Helper</span>
-          <button class="btn-sm" onclick="genUUIDs()"><span class="mi">casino</span>Regenerate</button>
-        </div>
-        <div class="uuid-row"><span class="uuid-tag">Header</span><span class="uuid-val" id="uh"></span><button class="btn-icon" onclick="cpUUID('uh')"><span class="mi" style="font-size:14px">content_copy</span></button></div>
-        <div class="uuid-row"><span class="uuid-tag">Module</span><span class="uuid-val" id="um"></span><button class="btn-icon" onclick="cpUUID('um')"><span class="mi" style="font-size:14px">content_copy</span></button></div>
-      </div>
-    </div>
-  </div>
-</div>
+    </template>
 
-<button class="fab" onclick="downloadManifest()"><span class="mi">download</span>Download</button>
-<div class="toast" id="toast"><span class="mi">check_circle</span><span id="toast-msg">Done!</span></div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, offset: 50 });
 
-<script>
-const SM=['@minecraft/server','@minecraft/server-ui','@minecraft/server-admin','@minecraft/server-editor','@minecraft/server-gametest','@minecraft/server-net'];
-const MT={behavior:['data','script','client_data','javascript'],resource:['resources','client_data'],skinpack:['skin_pack'],world:['world_template','data','resources']};
-let tab='behavior',mc=0,dc=0,sc=0;
+        const state = {
+            format_version: 2,
+            header: {
+                name: "",
+                description: "",
+                uuid: "",
+                version: [1, 0, 0],
+                min_engine_version: [1, 16, 0]
+            },
+            modules: [],
+            dependencies: []
+        };
 
-function switchTab(t){
-  tab=t;
-  document.querySelectorAll('.seg-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  document.getElementById('cap-card').style.display=t==='skinpack'?'none':'';
-  document.getElementById('sub-card').style.display=(t==='behavior'||t==='resource')?'':'none';
-  document.getElementById('mods').innerHTML='';mc=0;addMod();up();
-}
+        const DOM = {
+            hName: document.getElementById('h-name'),
+            hDesc: document.getElementById('h-desc'),
+            hUuid: document.getElementById('h-uuid'),
+            hV1: document.getElementById('h-v1'),
+            hV2: document.getElementById('h-v2'),
+            hV3: document.getElementById('h-v3'),
+            eV1: document.getElementById('e-v1'),
+            eV2: document.getElementById('e-v2'),
+            eV3: document.getElementById('e-v3'),
+            modContainer: document.getElementById('modules-container'),
+            depContainer: document.getElementById('dependencies-container'),
+            modEmpty: document.getElementById('modules-empty'),
+            depEmpty: document.getElementById('dependencies-empty'),
+            preview: document.getElementById('json-preview'),
+            toast: document.getElementById('toast'),
+            toastMsg: document.getElementById('toast-msg'),
+            toastIcon: document.getElementById('toast-icon')
+        };
 
-function ct(btnId,bodyId){
-  const b=document.getElementById(btnId),body=document.getElementById(bodyId);
-  b.classList.toggle('open');body.classList.toggle('open');
-}
+        function init() {
+            setupTheme();
+            setupTabs();
+            setupDropdown();
+            bindHeaderEvents();
+            
+            const saved = localStorage.getItem('manifestState');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(state, parsed);
+                    populateUI();
+                } catch(e) {
+                    resetState();
+                }
+            } else {
+                state.header.uuid = crypto.randomUUID();
+                populateUI();
+            }
 
-function addMod(){
-  mc++;const id=mc;
-  const types=MT[tab]||['data'];
-  const opts=types.map(t=>`<option value="${t}">${t}</option>`).join('');
-  const uuid=guuid();
-  const d=document.createElement('div');d.className='sc';d.id='m'+id;
-  d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">extension</span>Module ${id}</div><button class="btn-del" onclick="rm('m${id}');up()"><span class="mi" style="font-size:15px">close</span></button></div>
-  <div class="frow" style="margin-bottom:10px"><div><label class="fl"><span class="mi">category</span>Type</label><select class="sel mod-type" onchange="up()">${opts}</select></div>
-  <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp mod-ver" value="1.0.0" oninput="up()"></div></div>
-  <div style="margin-bottom:10px"><label class="fl"><span class="mi">fingerprint</span>UUID</label><div style="display:flex;gap:8px"><input type="text" class="inp mono mod-uuid" value="${uuid}" oninput="up()"><button type="button" class="btn-icon" onclick="regen(this)"><span class="mi" style="font-size:14px">casino</span></button></div></div>
-  <div><label class="fl"><span class="mi">notes</span>Description <span style="font-weight:400;text-transform:none;color:var(--md-outline);margin-left:3px">(optional)</span></label><input type="text" class="inp mod-desc" placeholder="Module description" oninput="up()"></div>`;
-  document.getElementById('mods').appendChild(d);up();
-}
+            document.getElementById('btnReset').addEventListener('click', () => {
+                if(confirm('Are you sure you want to reset all fields?')) {
+                    resetState();
+                }
+            });
 
-function addDep(type){
-  dc++;const id=dc;const d=document.createElement('div');d.className='sc';d.id='d'+id;
-  document.getElementById('deps-empty').style.display='none';
-  if(type==='uuid'){
-    const uuid=guuid();
-    d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">package_2</span>Pack Dependency</div><button class="btn-del" onclick="rm('d${id}');chkE('deps','deps-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
-    <div style="margin-bottom:10px"><label class="fl"><span class="mi">fingerprint</span>Pack UUID</label><div style="display:flex;gap:8px"><input type="text" class="inp mono dep-uuid" value="${uuid}" oninput="up()"><button type="button" class="btn-icon" onclick="regen(this)"><span class="mi" style="font-size:14px">casino</span></button></div></div>
-    <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp dep-ver" value="1.0.0" oninput="up()"></div>`;
-  } else {
-    const opts=SM.map(m=>`<option value="${m}">${m}</option>`).join('');
-    d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">code</span>Script Module</div><button class="btn-del" onclick="rm('d${id}');chkE('deps','deps-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
-    <div class="frow"><div><label class="fl"><span class="mi">terminal</span>Module Name</label><select class="sel dep-mod" onchange="up()">${opts}</select></div>
-    <div><label class="fl"><span class="mi">alt_route</span>Version</label><input type="text" class="inp dep-mod-ver" value="1.9.0" oninput="up()"></div></div>`;
-  }
-  document.getElementById('deps').appendChild(d);up();
-}
+            updatePreview();
+        }
 
-function addSub(){
-  sc++;const id=sc;const d=document.createElement('div');d.className='sc';d.id='s'+id;
-  document.getElementById('subs-empty').style.display='none';
-  d.innerHTML=`<div class="sc-head"><div class="sc-label"><span class="mi">folder_special</span>Subpack ${id}</div><button class="btn-del" onclick="rm('s${id}');chkE('subs','subs-empty');up()"><span class="mi" style="font-size:15px">close</span></button></div>
-  <div class="frow" style="margin-bottom:10px"><div><label class="fl"><span class="mi">folder</span>Folder Name</label><input type="text" class="inp sub-folder" placeholder="highres" oninput="up()"></div>
-  <div><label class="fl"><span class="mi">label</span>Display Name</label><input type="text" class="inp sub-name" placeholder="High Resolution" oninput="up()"></div></div>
-  <div><label class="fl"><span class="mi">memory</span>Memory Tier</label><input type="number" class="inp sub-tier" value="1" min="0" max="4" oninput="up()"></div>`;
-  document.getElementById('subs').appendChild(d);up();
-}
+        function setupTheme() {
+            const btn = document.getElementById('btnTheme');
+            const html = document.documentElement;
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+            btn.addEventListener('click', () => {
+                html.classList.toggle('dark');
+                localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+            });
+        }
 
-function rm(id){document.getElementById(id)?.remove();}
-function chkE(cid,eid){if(!document.getElementById(cid).children.length)document.getElementById(eid).style.display='';}
-function regen(btn){btn.previousElementSibling.value=guuid();up();}
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-white', 'dark:bg-slate-900', 'shadow', 'text-brand-600', 'dark:text-brand-400');
+                        b.classList.add('hover:bg-white/50', 'dark:hover:bg-slate-800/50', 'text-slate-600', 'dark:text-slate-400');
+                    });
+                    const target = e.target;
+                    target.classList.remove('hover:bg-white/50', 'dark:hover:bg-slate-800/50', 'text-slate-600', 'dark:text-slate-400');
+                    target.classList.add('active', 'bg-white', 'dark:bg-slate-900', 'shadow', 'text-brand-600', 'dark:text-brand-400');
+                    
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                    document.getElementById(target.dataset.target).classList.remove('hidden');
+                });
+            });
+        }
 
-function pv(s){const p=(s||'1.0.0').split('.').map(v=>parseInt(v)||0);while(p.length<3)p.push(0);return p.slice(0,3);}
+        function setupDropdown() {
+            const btn = document.getElementById('btnPresets');
+            const menu = document.getElementById('presetsDropdown');
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    setTimeout(() => {
+                        menu.classList.remove('scale-95', 'opacity-0');
+                        menu.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                } else {
+                    closeDropdown();
+                }
+            });
 
-function build(){
-  const fv=parseInt(document.getElementById('format_version').value);
-  const name=document.getElementById('pack_name').value||'My Pack';
-  const desc=document.getElementById('pack_desc').value||'My pack description';
-  const ver=pv(document.getElementById('pack_version').value);
-  const minEng=pv(document.getElementById('min_engine').value);
-  const firstUUID=document.getElementById('mods').querySelector('.mod-uuid')?.value||guuid();
-  const m={format_version:fv,header:{name,description:desc,uuid:firstUUID,version:ver,min_engine_version:minEng}};
-  const mods=[];
-  document.querySelectorAll('#mods .sc').forEach(c=>{
-    const mod={type:c.querySelector('.mod-type').value,uuid:c.querySelector('.mod-uuid').value||guuid(),version:pv(c.querySelector('.mod-ver').value)};
-    const d=c.querySelector('.mod-desc').value;if(d)mod.description=d;mods.push(mod);
-  });
-  if(mods.length)m.modules=mods;
-  const deps=[];
-  document.querySelectorAll('#deps .sc').forEach(c=>{
-    if(c.querySelector('.dep-uuid'))deps.push({uuid:c.querySelector('.dep-uuid').value,version:pv(c.querySelector('.dep-ver').value)});
-    else if(c.querySelector('.dep-mod'))deps.push({module_name:c.querySelector('.dep-mod').value,version:c.querySelector('.dep-mod-ver').value});
-  });
-  if(deps.length)m.dependencies=deps;
-  const caps=Array.from(document.querySelectorAll('#cap-body input:checked')).map(c=>c.value);
-  if(caps.length)m.capabilities=caps;
-  const subs=[];
-  document.querySelectorAll('#subs .sc').forEach(c=>{
-    subs.push({folder_name:c.querySelector('.sub-folder').value||'subpack',name:c.querySelector('.sub-name').value||'Subpack',memory_tier:parseInt(c.querySelector('.sub-tier').value)||1});
-  });
-  if(subs.length)m.subpacks=subs;
-  const au=document.getElementById('meta_author').value,li=document.getElementById('meta_license').value,ur=document.getElementById('meta_url').value,pr=document.getElementById('meta_product').value;
-  if(au||li||ur||pr){m.metadata={};if(au)m.metadata.authors=[au];if(li)m.metadata.license=li;if(ur)m.metadata.url=ur;if(pr)m.metadata.product_type=pr;m.metadata.generated_with={'manifest-generator':['1.0.0']};}
-  return m;
-}
+            document.addEventListener('click', closeDropdown);
 
-function hl(json){
-  json=json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return json.replace(/("(\\u[\da-fA-F]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{
-    let c='jn';if(/^"/.test(m)){c=/:$/.test(m)?'jk':'js';}else if(/true|false/.test(m))c='jb';else if(/null/.test(m))c='jnull';
-    return`<span class="${c}">${m}</span>`;
-  });
-}
+            document.querySelectorAll('.preset-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    applyPreset(e.target.dataset.preset);
+                    closeDropdown();
+                });
+            });
 
-function up(){
-  try{
-    const json=JSON.stringify(build(),null,2);
-    document.getElementById('lp').innerHTML=hl(json);
-    const chip=document.getElementById('vchip');chip.className='chip chip-ok';chip.innerHTML='<span class="mi" style="font-size:11px">check_circle</span>valid';
-  }catch(e){
-    const chip=document.getElementById('vchip');chip.className='chip chip-err';chip.innerHTML='<span class="mi" style="font-size:11px">error</span>error';
-  }
-}
+            function closeDropdown() {
+                menu.classList.remove('scale-100', 'opacity-100');
+                menu.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => menu.classList.add('hidden'), 150);
+            }
+        }
 
-function downloadManifest(){
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(build(),null,2)],{type:'application/json'}));
-  a.download='manifest.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
-  toast('manifest.json downloaded');
-}
-function copyJSON(){navigator.clipboard.writeText(JSON.stringify(build(),null,2));toast('Copied to clipboard');}
-function cpUUID(id){navigator.clipboard.writeText(document.getElementById(id).textContent);toast('UUID copied');}
-function genUUIDs(){document.getElementById('uh').textContent=guuid();document.getElementById('um').textContent=guuid();}
+        function bindHeaderEvents() {
+            const updateH = () => {
+                state.header.name = DOM.hName.value;
+                state.header.description = DOM.hDesc.value;
+                state.header.uuid = DOM.hUuid.value;
+                state.header.version = [parseInt(DOM.hV1.value)||0, parseInt(DOM.hV2.value)||0, parseInt(DOM.hV3.value)||0];
+                state.header.min_engine_version = [parseInt(DOM.eV1.value)||0, parseInt(DOM.eV2.value)||0, parseInt(DOM.eV3.value)||0];
+                updatePreview();
+            };
+            [DOM.hName, DOM.hDesc, DOM.hUuid, DOM.hV1, DOM.hV2, DOM.hV3, DOM.eV1, DOM.eV2, DOM.eV3].forEach(el => {
+                el.addEventListener('input', updateH);
+            });
+        }
 
-function resetForm(){
-  ['pack_name','pack_desc','pack_version','min_engine','meta_author','meta_license','meta_url'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('meta_product').value='';
-  document.querySelectorAll('#cap-body input').forEach(c=>c.checked=false);
-  document.getElementById('mods').innerHTML='';document.getElementById('deps').innerHTML='';document.getElementById('subs').innerHTML='';
-  mc=0;dc=0;sc=0;
-  document.getElementById('deps-empty').style.display='';document.getElementById('subs-empty').style.display='';
-  addMod();up();toast('Form reset');
-}
+        function populateUI() {
+            DOM.hName.value = state.header.name || "";
+            DOM.hDesc.value = state.header.description || "";
+            DOM.hUuid.value = state.header.uuid || "";
+            DOM.hV1.value = state.header.version[0];
+            DOM.hV2.value = state.header.version[1];
+            DOM.hV3.value = state.header.version[2];
+            DOM.eV1.value = state.header.min_engine_version[0];
+            DOM.eV2.value = state.header.min_engine_version[1];
+            DOM.eV3.value = state.header.min_engine_version[2];
 
-function toast(msg){
-  const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);
-}
+            DOM.modContainer.innerHTML = '';
+            state.modules.forEach(m => renderModule(m));
+            updateEmptyStates();
 
-function guuid(){
-  let d=new Date().getTime();if(typeof performance!=='undefined'&&performance.now)d+=performance.now();
-  return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=(d+Math.random()*16)%16|0;d=Math.floor(d/16);return(c==='x'?r:(r&0x3|0x8)).toString(16);});
-}
+            DOM.depContainer.innerHTML = '';
+            state.dependencies.forEach(d => renderDependency(d));
+            updateEmptyStates();
+        }
 
-document.addEventListener('DOMContentLoaded',()=>{addMod();genUUIDs();up();});
-</script>
+        function genUUID(targetId) {
+            const el = document.getElementById(targetId);
+            el.value = crypto.randomUUID();
+            el.dispatchEvent(new Event('input'));
+        }
+
+        function addModule() {
+            const mod = {
+                type: 'resources',
+                uuid: crypto.randomUUID(),
+                version: [1, 0, 0]
+            };
+            state.modules.push(mod);
+            renderModule(mod);
+            updatePreview();
+            updateEmptyStates();
+        }
+
+        function renderModule(mod) {
+            const tpl = document.getElementById('tpl-module').content.cloneNode(true);
+            const el = tpl.querySelector('.module-item');
+            el.dataset.uuid = mod.uuid;
+            
+            const typeSel = el.querySelector('.mod-type');
+            const uuidIn = el.querySelector('.mod-uuid');
+            const v1 = el.querySelector('.mod-v1');
+            const v2 = el.querySelector('.mod-v2');
+            const v3 = el.querySelector('.mod-v3');
+
+            typeSel.value = mod.type;
+            uuidIn.value = mod.uuid;
+            v1.value = mod.version[0];
+            v2.value = mod.version[1];
+            v3.value = mod.version[2];
+
+            const updateM = () => {
+                const idx = state.modules.findIndex(m => m.uuid === el.dataset.uuid);
+                if (idx > -1) {
+                    state.modules[idx].type = typeSel.value;
+                    state.modules[idx].uuid = uuidIn.value;
+                    state.modules[idx].version = [parseInt(v1.value)||0, parseInt(v2.value)||0, parseInt(v3.value)||0];
+                    updatePreview();
+                }
+            };
+
+            [typeSel, uuidIn, v1, v2, v3].forEach(i => i.addEventListener('input', updateM));
+            DOM.modContainer.appendChild(el);
+        }
+
+        function removeModule(btn) {
+            const el = btn.closest('.module-item');
+            state.modules = state.modules.filter(m => m.uuid !== el.dataset.uuid);
+            el.remove();
+            updatePreview();
+            updateEmptyStates();
+        }
+
+        function regenModuleUUID(btn) {
+            const el = btn.closest('.module-item');
+            const input = el.querySelector('.mod-uuid');
+            input.value = crypto.randomUUID();
+            input.dispatchEvent(new Event('input'));
+            const idx = state.modules.findIndex(m => m.uuid === el.dataset.uuid);
+            if(idx > -1) {
+                state.modules[idx].uuid = input.value;
+                el.dataset.uuid = input.value;
+            }
+        }
+
+        function addDependency() {
+            const dep = {
+                uuid: "",
+                version: [1, 0, 0],
+                _internalId: crypto.randomUUID()
+            };
+            state.dependencies.push(dep);
+            renderDependency(dep);
+            updatePreview();
+            updateEmptyStates();
+        }
+
+        function renderDependency(dep) {
+            const tpl = document.getElementById('tpl-dependency').content.cloneNode(true);
+            const el = tpl.querySelector('.dep-item');
+            el.dataset.id = dep._internalId || crypto.randomUUID();
+            dep._internalId = el.dataset.id;
+            
+            const uuidIn = el.querySelector('.dep-uuid');
+            const v1 = el.querySelector('.dep-v1');
+            const v2 = el.querySelector('.dep-v2');
+            const v3 = el.querySelector('.dep-v3');
+
+            uuidIn.value = dep.uuid;
+            v1.value = dep.version[0];
+            v2.value = dep.version[1];
+            v3.value = dep.version[2];
+
+            const updateD = () => {
+                const idx = state.dependencies.findIndex(d => d._internalId === el.dataset.id);
+                if (idx > -1) {
+                    state.dependencies[idx].uuid = uuidIn.value;
+                    state.dependencies[idx].version = [parseInt(v1.value)||0, parseInt(v2.value)||0, parseInt(v3.value)||0];
+                    updatePreview();
+                }
+            };
+
+            [uuidIn, v1, v2, v3].forEach(i => i.addEventListener('input', updateD));
+            DOM.depContainer.appendChild(el);
+        }
+
+        function removeDependency(btn) {
+            const el = btn.closest('.dep-item');
+            state.dependencies = state.dependencies.filter(d => d._internalId !== el.dataset.id);
+            el.remove();
+            updatePreview();
+            updateEmptyStates();
+        }
+
+        function updateEmptyStates() {
+            DOM.modEmpty.style.display = state.modules.length === 0 ? 'block' : 'none';
+            DOM.depEmpty.style.display = state.dependencies.length === 0 ? 'block' : 'none';
+        }
+
+        function generateFinalJSON() {
+            const out = {
+                format_version: state.format_version,
+                header: {
+                    name: state.header.name,
+                    description: state.header.description,
+                    uuid: state.header.uuid,
+                    version: state.header.version,
+                    min_engine_version: state.header.min_engine_version
+                }
+            };
+
+            if (state.modules.length > 0) {
+                out.modules = state.modules.map(m => ({
+                    type: m.type,
+                    uuid: m.uuid,
+                    version: m.version
+                }));
+            }
+
+            if (state.dependencies.length > 0) {
+                out.dependencies = state.dependencies.map(d => ({
+                    uuid: d.uuid,
+                    version: d.version
+                }));
+            }
+
+            return out;
+        }
+
+        function syntaxHighlight(json) {
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) cls = 'json-key';
+                    else cls = 'json-string';
+                } else if (/true|false/.test(match)) cls = 'json-boolean';
+                else if (/null/.test(match)) cls = 'json-null';
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        function updatePreview() {
+            const obj = generateFinalJSON();
+            const str = JSON.stringify(obj, null, 4);
+            DOM.preview.innerHTML = syntaxHighlight(str);
+            localStorage.setItem('manifestState', JSON.stringify(state));
+        }
+
+        function resetState() {
+            state.header = { name: "", description: "", uuid: crypto.randomUUID(), version: [1, 0, 0], min_engine_version: [1, 16, 0] };
+            state.modules = [];
+            state.dependencies = [];
+            populateUI();
+            updatePreview();
+            showToast('Reset successfully', 'success');
+        }
+
+        function applyPreset(type) {
+            resetState();
+            state.header.name = `My ${type.charAt(0).toUpperCase() + type.slice(1)} Pack`;
+            state.header.description = `A custom ${type} pack.`;
+            
+            if (type === 'resource') {
+                state.modules.push({ type: 'resources', uuid: crypto.randomUUID(), version: [1, 0, 0] });
+            } else if (type === 'behavior') {
+                state.modules.push({ type: 'data', uuid: crypto.randomUUID(), version: [1, 0, 0] });
+            } else if (type === 'skin') {
+                state.modules.push({ type: 'client_data', uuid: crypto.randomUUID(), version: [1, 0, 0] });
+            }
+            
+            populateUI();
+            updatePreview();
+            showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} preset loaded`, 'success');
+        }
+
+        function copyJson() {
+            const str = JSON.stringify(generateFinalJSON(), null, 4);
+            navigator.clipboard.writeText(str).then(() => {
+                showToast('Copied to clipboard!', 'success');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = str;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Copied to clipboard!', 'success');
+                } catch (err) {
+                    showToast('Failed to copy', 'error');
+                }
+                document.body.removeChild(textarea);
+            });
+        }
+
+        function downloadJson() {
+            const str = JSON.stringify(generateFinalJSON(), null, 4);
+            const blob = new Blob([str], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'manifest.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Downloaded manifest.json', 'success');
+        }
+
+        let toastTimeout;
+        function showToast(msg, type) {
+            clearTimeout(toastTimeout);
+            DOM.toastMsg.textContent = msg;
+            DOM.toastIcon.className = type === 'success' ? 'fa-solid fa-check-circle text-green-400' : 'fa-solid fa-circle-exclamation text-red-400';
+            DOM.toast.classList.add('show');
+            toastTimeout = setTimeout(() => {
+                DOM.toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
